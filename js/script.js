@@ -486,47 +486,29 @@ function doAddRow() {
   setStatus("✓ Added: " + row.patientName, "ok");
 }
 
-// Export CSV function
 function exportCsv() {
   if (!wardRows.length) {
     alert("No data to export");
     return;
   }
 
+  // Simplified columns that match your actual data
   var cols = [
-    "Facility",
-    "Ward",
-    "Room",
-    "Bed",
-    "MRN",
-    "AdmissionDateTime",
     "Shift",
-    "PatientStatus",
-    "AdmissionType",
-    "Service",
-    "Attending",
-    "NurseOnDuty",
-    "LastName",
-    "FirstName",
-    "MiddleName",
-    "Sex",
-    "DOB",
-    "Age",
-    "CivilStatus",
-    "ContactNo",
-    "Address",
-    "EmergencyContact",
-    "ChiefComplaint",
+    "Status",
+    "Room/Bed",
+    "MRN",
+    "Patient Name",
+    "Risk Flags",
     "Diagnosis",
-    "Allergies",
+    "BP",
+    "HR",
+    "RR",
+    "Temp",
+    "SpO2",
+    "Pain",
     "Precautions",
-    "CodeStatus",
-    "Diet",
-    "Vitals",
-    "RiskFlags",
     "Checklist",
-    "History",
-    "Orders",
     "SBAR",
   ];
 
@@ -535,42 +517,26 @@ function exportCsv() {
   wardRows.forEach(function (r) {
     lines.push(
       [
-        r.facility || "",
-        r.ward || "",
-        r.room || "",
-        r.bed || "",
-        r.mrn || "",
-        r.admitDateTime || "",
         r.shift || "",
         r.patientStatus || "",
-        r.admitType || "",
-        r.service || "",
-        r.attending || "",
-        r.nurseOnDuty || "",
-        r.lastName || "",
-        r.firstName || "",
-        r.middleName || "",
-        r.sex || "",
-        r.dob || "",
-        r.age || "",
-        r.civilStatus || "",
-        r.contactNo || "",
-        r.address || "",
-        r.emergencyContact || "",
-        r.chiefComplaint || "",
-        r.workingDx || "",
-        r.allergies || "",
-        r.precautions || "",
-        r.codeStatus || "",
-        r.diet || "",
-        r.vitals || "",
+        (r.room || "") + (r.bed ? "/" + r.bed : ""),
+        r.mrn || "",
+        r.patientName || "",
         getRiskFlags(r),
+        r.workingDx || "",
+        r.bpRaw || "",
+        r.hrRaw || "",
+        r.rrRaw || "",
+        r.tempRaw || "",
+        r.spo2Raw || "",
+        r.painRaw || "",
+        r.precautions || "",
         getChecklistSummary(r.checklist),
-        r.history || "",
-        r.orders || "",
         getSBAR(r),
       ]
-        .map(escapeCsv)
+        .map(function (v) {
+          return escapeCsv(v || "");
+        })
         .join(","),
     );
   });
@@ -582,7 +548,7 @@ function exportCsv() {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  setStatus("CSV exported", "ok");
+  setStatus("CSV exported");
 }
 
 // Save JSON function
