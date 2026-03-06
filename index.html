@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ward Admission & Census</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <div class="header-title">
+          <div class="brand-mark">H+</div>
+          <div>
+            <p class="title">Ward Admission &amp; Census</p>
+            <p class="subtitle">
+              Admission · SBAR Handover · Risk Flags · Excel Export
+            </p>
+          </div>
+        </div>
+        <div class="header-right">
+          <span id="statusBadge">Ready</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="container1">
+        <div class="toolbar-top">
+          <label class="privacy-toggle">
+            <input type="checkbox" id="privacyMode" />
+            🔒 Privacy Mode
+          </label>
+          <div class="divider"></div>
+          <button class="btn btn-sm" id="btnAutofillNow">
+            ⏱ Set Admit = Now
+          </button>
+          <button class="btn btn-primary" id="btnExportCsv" disabled>
+            ↓ Export CSV
+          </button>
+          <div class="divider"></div>
+          <button class="btn btn-sm btn-ghost" id="btnSaveJson">
+            💾 Save JSON
+          </button>
+          <button class="btn btn-sm btn-ghost" id="btnLoadJson">
+            📂 Load JSON
+          </button>
+          <button class="btn btn-sm btn-danger" id="btnClearAll">
+            🗑 Clear All
+          </button>
+        </div>
+        <div class="filter-grid">
+          <div class="filter-field">
+            <label class="filter-label">Shift</label>
+            <select id="filterShift">
+              <option value="">All Shifts</option>
+              <option>Day</option>
+              <option>Evening</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label class="filter-label">Patient Status</label>
+            <select id="filterStatus">
+              <option value="">All Statuses</option>
+              <option>Admitted</option>
+              <option>For Transfer</option>
+              <option>For OR</option>
+              <option>Discharged</option>
+              <option>Deceased</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label class="filter-label">Nurse on Duty</label>
+            <input id="filterNurse" placeholder="Search nurse…" />
+          </div>
+          <div class="filter-field">
+            <label class="filter-label">Search</label>
+            <input id="filterSearch" placeholder="Name, MRN, Room, Dx…" />
+          </div>
+        </div>
+      </div>
+
+      <div class="container3">
+        <div class="card form-card">
+          <div class="card-section-header">
+            <span class="section-icon">📋</span>
+            <span class="section-title">Admission Details</span>
+          </div>
+          <div class="form-grid">
+            <div class="field col-3">
+              <label>Facility / Hospital</label
+              ><input
+                id="facility"
+                placeholder="e.g., Southwestern University Hospital"
+              />
+            </div>
+            <div class="field col-3">
+              <label>Ward / Unit</label
+              ><input id="ward" placeholder="e.g., Ward 3A" />
+            </div>
+            <div class="field col-2">
+              <label>Room</label><input id="room" placeholder="e.g., 305" />
+            </div>
+            <div class="field col-2">
+              <label>Bed</label><input id="bed" placeholder="e.g., B2" />
+            </div>
+            <div class="field col-2">
+              <label>MRN / Hospital No.</label
+              ><input id="mrn" placeholder="e.g., 24-001233" />
+            </div>
+            <div class="field col-3">
+              <label>Admission Date/Time <span class="req">*</span></label
+              ><input id="admitDateTime" placeholder="YYYY-MM-DD HH:MM" /><span
+                class="hint"
+                >Exported as text for Excel</span
+              >
+            </div>
+            <div class="field col-3">
+              <label>Shift <span class="req">*</span></label
+              ><select id="shift">
+                <option value="">Select shift…</option>
+                <option>Day</option>
+                <option>Evening</option>
+              </select>
+            </div>
+            <div class="field col-3">
+              <label>Patient Status</label
+              ><select id="patientStatus">
+                <option>Admitted</option>
+                <option>For Transfer</option>
+                <option>For OR</option>
+                <option>Discharged</option>
+                <option>Deceased</option>
+              </select>
+            </div>
+            <div class="field col-3">
+              <label>Admission Type</label
+              ><select id="admitType">
+                <option value="">Select…</option>
+                <option>Emergency</option>
+                <option>Elective</option>
+                <option>Direct Admission</option>
+                <option>Transfer In</option>
+              </select>
+            </div>
+            <div class="field col-3">
+              <label>Service</label
+              ><select id="service">
+                <option value="">Select…</option>
+                <option>Medical</option>
+                <option>Surgical</option>
+                <option>OB-GYN</option>
+                <option>Pediatrics</option>
+                <option>Psychiatry</option>
+                <option>ICU/CCU</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field col-3">
+              <label>Attending Physician</label
+              ><input id="attending" placeholder="e.g., Dr. Juan Dela Cruz" />
+            </div>
+            <div class="field col-3">
+              <label>Nurse on Duty</label
+              ><input id="nurseOnDuty" placeholder="Full name or initials" />
+            </div>
+            <div class="field col-3">
+              <label>Diet Order</label
+              ><input id="diet" placeholder="e.g., NPO; Soft diet" />
+            </div>
+          </div>
+
+          <div class="card-section-header sub">
+            <span class="section-icon">👤</span>
+            <span class="section-title">Patient Information</span>
+          </div>
+          <div class="form-grid">
+            <div class="field col-3">
+              <label>Last Name <span class="req">*</span></label
+              ><input id="lastName" />
+            </div>
+            <div class="field col-3">
+              <label>First Name <span class="req">*</span></label
+              ><input id="firstName" />
+            </div>
+            <div class="field col-2">
+              <label>Middle Name</label><input id="middleName" />
+            </div>
+            <div class="field col-2">
+              <label>Sex</label
+              ><select id="sex">
+                <option value="">Select…</option>
+                <option>Male</option>
+                <option>Female</option>
+              </select>
+            </div>
+            <div class="field col-2">
+              <label>Date of Birth</label><input type="date" id="dob" />
+            </div>
+            <div class="field col-2">
+              <label>Age (years)</label
+              ><input
+                id="age"
+                type="number"
+                min="0"
+                placeholder="Auto/Manual"
+              />
+            </div>
+            <div class="field col-3">
+              <label>Civil Status</label
+              ><select id="civilStatus">
+                <option value="">Select…</option>
+                <option>Single</option>
+                <option>Married</option>
+                <option>Widowed</option>
+                <option>Separated</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field col-3">
+              <label>Contact No.</label
+              ><input id="contactNo" placeholder="+63…" />
+            </div>
+            <div class="field col-4">
+              <label>Address</label
+              ><input
+                id="address"
+                placeholder="Street/Barangay, City, Province"
+              />
+            </div>
+            <div class="field col-6">
+              <label>Emergency Contact (Name / Relation / No.)</label
+              ><input
+                id="emergencyContact"
+                placeholder="e.g., Maria Dela Cruz (Mother) — 09xx…"
+              />
+            </div>
+            <div class="field col-6">
+              <label>Allergies</label
+              ><input
+                id="allergies"
+                placeholder="e.g., Penicillin; None known"
+              />
+            </div>
+          </div>
+
+          <div class="card-section-header sub">
+            <span class="section-icon">🩺</span>
+            <span class="section-title">Clinical Snapshot</span>
+          </div>
+          <div class="form-grid">
+            <div class="field col-6">
+              <label>Chief Complaint</label
+              ><textarea
+                id="chiefComplaint"
+                placeholder="e.g., Fever x 3 days, cough…"
+              ></textarea>
+            </div>
+            <div class="field col-6">
+              <label>Working / Admitting Diagnosis</label
+              ><textarea
+                id="workingDx"
+                placeholder="e.g., CAP, AGE, DKA…"
+              ></textarea>
+            </div>
+            <div class="field col-3">
+              <label>Precautions</label
+              ><select id="precautions">
+                <option value="">Select…</option>
+                <option>Standard</option>
+                <option>Contact</option>
+                <option>Droplet</option>
+                <option>Airborne</option>
+                <option>Fall Risk</option>
+                <option>Seizure Precautions</option>
+                <option>Suicide Precautions</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field col-3">
+              <label>Code Status</label
+              ><select id="codeStatus">
+                <option value="">Select…</option>
+                <option>Full Code</option>
+                <option>DNR</option>
+                <option>DNI</option>
+                <option>Limited</option>
+                <option>Unknown</option>
+              </select>
+            </div>
+            <div class="field col-12">
+              <label>Vital Signs</label>
+              <div class="vitals-grid">
+                <div class="vital">
+                  <input id="bp" placeholder="e.g., 120/80" /><span
+                    >BP (mmHg)</span
+                  >
+                </div>
+                <div class="vital">
+                  <input id="hr" placeholder="e.g., 72" /><span>HR (bpm)</span>
+                </div>
+                <div class="vital">
+                  <input id="rr" placeholder="e.g., 18" /><span>RR (/min)</span>
+                </div>
+                <div class="vital">
+                  <input id="temp" placeholder="e.g., 37.0" /><span
+                    >Temp (°C)</span
+                  >
+                </div>
+                <div class="vital">
+                  <input id="spo2" placeholder="e.g., 98" /><span
+                    >SpO₂ (%)</span
+                  >
+                </div>
+                <div class="vital">
+                  <input id="pain" placeholder="0–10" /><span>Pain Score</span>
+                </div>
+              </div>
+            </div>
+            <div class="field col-6">
+              <label>Relevant History (PMH/PSH/Home Meds)</label
+              ><textarea
+                id="history"
+                placeholder="Past illnesses, surgeries, home meds…"
+              ></textarea>
+            </div>
+            <div class="field col-6">
+              <label>Initial Orders / Notes</label
+              ><textarea
+                id="orders"
+                placeholder="IVF, antibiotics, labs, imaging…"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="card-section-header sub">
+            <span class="section-icon">✅</span>
+            <span class="section-title">Admission Checklist</span>
+          </div>
+          <div class="checklist-grid">
+            <label class="ck-item"
+              ><input type="checkbox" id="ck_idband" /><span
+                >ID band applied</span
+              ></label
+            >
+            <label class="ck-item"
+              ><input type="checkbox" id="ck_allergy" /><span
+                >Allergies verified</span
+              ></label
+            >
+            <label class="ck-item"
+              ><input type="checkbox" id="ck_vitals" /><span
+                >Initial VS taken</span
+              ></label
+            >
+            <label class="ck-item"
+              ><input type="checkbox" id="ck_iv" /><span
+                >IV access secured</span
+              ></label
+            >
+            <label class="ck-item"
+              ><input type="checkbox" id="ck_consent" /><span
+                >Consent completed</span
+              ></label
+            >
+            <label class="ck-item"
+              ><input type="checkbox" id="ck_orders" /><span
+                >Orders carried out</span
+              ></label
+            >
+          </div>
+
+          <div class="form-actions">
+            <span class="hint"
+              >Fields marked <span class="req">*</span> are required</span
+            >
+            <div class="spacer"></div>
+            <button class="btn btn-ghost" id="btnClearForm">Clear Form</button>
+            <button class="btn btn-primary" id="btnAddRow">
+              + Add to Ward List
+            </button>
+          </div>
+        </div>
+
+        <div class="card table-card">
+          <div class="card-section-header">
+            <span class="section-icon">📊</span>
+            <span class="section-title">Ward List</span>
+            <span id="rowCount" class="row-count"></span>
+            <span class="hint" style="margin-left: auto"
+              >Privacy mode masks identifiers on screen only.</span
+            >
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Shift</th>
+                  <th>Status</th>
+                  <th>Room/Bed</th>
+                  <th>MRN</th>
+                  <th>Patient</th>
+                  <th>Risk Flags</th>
+                  <th>Diagnosis</th>
+                  <th>Vitals</th>
+                  <th>Precautions</th>
+                  <th>Checklist</th>
+                  <th>SBAR</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      Local-only tool — no data is uploaded or stored externally. Designed for
+      ward/floor admission &amp; endorsement workflow.
+    </footer>
+
+    <!-- script MUST be at the very end of body so all elements exist first -->
+    <script src="js/script.js"></script>
+  </body>
+</html>
