@@ -3,10 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ward Admission & Census</title>
+    <title>Ward Admission · pink palette · Poppins</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/style.css" />
@@ -14,44 +15,39 @@
   <body>
     <header class="header">
       <div class="header-inner">
+        <div class="brand-mark">H+</div>
         <div class="header-title">
-          <div class="brand-mark">H+</div>
-          <div>
-            <p class="title">Ward Admission &amp; Census</p>
-            <p class="subtitle">
-              Admission · SBAR Handover · Risk Flags · Excel Export
-            </p>
-          </div>
+          <p class="title">Ward Admission & Census</p>
+          <p class="subtitle">
+            Admission · SBAR Handover · Risk Flags · Excel Export
+          </p>
         </div>
-        <div class="header-right">
-          <span id="statusBadge">Ready</span>
-        </div>
+        <div class="header-right"><span id="statusBadge">Ready</span></div>
       </div>
     </header>
 
     <main>
       <div class="container1">
         <div class="toolbar-top">
-          <label class="privacy-toggle">
-            <input type="checkbox" id="privacyMode" />
-            Privacy Mode
-          </label>
+          <label class="privacy-toggle"
+            ><input type="checkbox" id="privacyMode" /> Privacy Mode</label
+          >
           <div class="divider"></div>
           <button class="btn btn-sm" id="btnAutofillNow">
-             Set Admit = Now
+            ⏱️ Set Admit = Now
           </button>
           <button class="btn btn-primary" id="btnExportCsv" disabled>
-             Export CSV
+            📤 Export CSV
           </button>
           <div class="divider"></div>
           <button class="btn btn-sm btn-ghost" id="btnSaveJson">
-             Save JSON
+            💾 Save JSON
           </button>
           <button class="btn btn-sm btn-ghost" id="btnLoadJson">
-             Load JSON
+            📂 Load JSON
           </button>
           <button class="btn btn-sm btn-danger" id="btnClearAll">
-             Clear All
+            🗑️ Clear All
           </button>
         </div>
         <div class="filter-grid">
@@ -61,12 +57,13 @@
               <option value="">All Shifts</option>
               <option>Day</option>
               <option>Evening</option>
+              <option>Night</option>
             </select>
           </div>
           <div class="filter-field">
             <label class="filter-label">Patient Status</label>
             <select id="filterStatus">
-              <option value="" selected>All Statuses</option>
+              <option value="">All Statuses</option>
               <option>Admitted</option>
               <option>For Transfer</option>
               <option>For OR</option>
@@ -88,8 +85,8 @@
       <div class="container3">
         <div class="card form-card">
           <div class="card-section-header">
-            <!-- <span class="section-icon">📋</span> -->
-            <span class="section-title">Admission Details</span>
+            <span class="section-icon">📋</span
+            ><span class="section-title">Admission Details</span>
           </div>
           <div class="form-grid">
             <div class="field col-3">
@@ -121,17 +118,18 @@
               >
             </div>
             <div class="field col-3">
-              <label>Shift <span class="req">*</span></label
-              ><select id="shift">
+              <label>Shift <span class="req">*</span></label>
+              <select id="shift">
                 <option value="">Select shift…</option>
                 <option>Day</option>
                 <option>Evening</option>
+                <option>Night</option>
               </select>
             </div>
             <div class="field col-3">
-              <label>Patient Status</label
-              ><select id="patientStatus">
-                <option selected>Admitted</option>
+              <label>Patient Status</label>
+              <select id="patientStatus">
+                <option>Admitted</option>
                 <option>For Transfer</option>
                 <option>For OR</option>
                 <option>Discharged</option>
@@ -139,8 +137,8 @@
               </select>
             </div>
             <div class="field col-3">
-              <label>Admission Type</label
-              ><select id="admitType">
+              <label>Admission Type</label>
+              <select id="admitType">
                 <option value="">Select…</option>
                 <option>Emergency</option>
                 <option>Elective</option>
@@ -149,8 +147,8 @@
               </select>
             </div>
             <div class="field col-3">
-              <label>Service</label
-              ><select id="service">
+              <label>Service</label>
+              <select id="service">
                 <option value="">Select…</option>
                 <option>Medical</option>
                 <option>Surgical</option>
@@ -176,8 +174,8 @@
           </div>
 
           <div class="card-section-header sub">
-            <!-- <span class="section-icon">👤</span> -->
-            <span class="section-title">Patient Information</span>
+            <span class="section-icon">👤</span
+            ><span class="section-title">Patient Information</span>
           </div>
           <div class="form-grid">
             <div class="field col-3">
@@ -192,8 +190,8 @@
               <label>Middle Name</label><input id="middleName" />
             </div>
             <div class="field col-2">
-              <label>Sex</label
-              ><select id="sex">
+              <label>Sex</label>
+              <select id="sex">
                 <option value="">Select…</option>
                 <option>Male</option>
                 <option>Female</option>
@@ -204,17 +202,11 @@
             </div>
             <div class="field col-2">
               <label>Age (years)</label
-              ><input
-                id="age"
-                type="number"
-                min="0"
-                placeholder="Auto"
-                readonly
-              />
+              ><input id="age" type="number" readonly />
             </div>
             <div class="field col-3">
-              <label>Civil Status</label
-              ><select id="civilStatus">
+              <label>Civil Status</label>
+              <select id="civilStatus">
                 <option value="">Select…</option>
                 <option>Single</option>
                 <option>Married</option>
@@ -251,8 +243,8 @@
           </div>
 
           <div class="card-section-header sub">
-            <!-- <span class="section-icon">🩺</span> -->
-            <span class="section-title">Clinical Snapshot</span>
+            <span class="section-icon">🩺</span
+            ><span class="section-title">Clinical Snapshot</span>
           </div>
           <div class="form-grid">
             <div class="field col-6">
@@ -270,8 +262,8 @@
               ></textarea>
             </div>
             <div class="field col-3">
-              <label>Precautions</label
-              ><select id="precautions">
+              <label>Precautions</label>
+              <select id="precautions">
                 <option value="">Select…</option>
                 <option>Standard</option>
                 <option>Contact</option>
@@ -284,8 +276,8 @@
               </select>
             </div>
             <div class="field col-3">
-              <label>Code Status</label
-              ><select id="codeStatus">
+              <label>Code Status</label>
+              <select id="codeStatus">
                 <option value="">Select…</option>
                 <option>Full Code</option>
                 <option>DNR</option>
@@ -340,8 +332,8 @@
           </div>
 
           <div class="card-section-header sub">
-            <!-- <span class="section-icon">✅</span> -->
-            <span class="section-title">Admission Checklist</span>
+            <span class="section-icon">✅</span
+            ><span class="section-title">Admission Checklist</span>
           </div>
           <div class="checklist-grid">
             <label class="ck-item"
@@ -390,7 +382,7 @@
 
         <div class="card table-card">
           <div class="card-section-header">
-            <!-- <span class="section-icon">📊</span> -->
+            <span class="section-icon">📊</span>
             <span class="section-title">Ward List</span>
             <span id="rowCount" class="row-count"></span>
             <span class="hint" style="margin-left: auto"
@@ -401,18 +393,23 @@
             <table>
               <thead>
                 <tr>
-                  <th>Shift</th>
-                  <th>Status</th>
-                  <th>Room/Bed</th>
+                  <th>SHIFT</th>
+                  <th>STATUS</th>
+                  <th>ROOM/BED</th>
                   <th>MRN</th>
-                  <th>Patient</th>
-                  <th>Risk Flags</th>
-                  <th>Diagnosis</th>
-                  <th>Vitals</th>
-                  <th>Precautions</th>
-                  <th>Checklist</th>
+                  <th>PATIENT</th>
+                  <th>RISK FLAGS</th>
+                  <th>DIAGNOSIS</th>
+                  <th>BP (mmHg)</th>
+                  <th>HR (bpm)</th>
+                  <th>RR (/min)</th>
+                  <th>TEMP (°C)</th>
+                  <th>SpO₂ (%)</th>
+                  <th>PAIN</th>
+                  <th>PRECAUTIONS</th>
+                  <th>CHECKLIST</th>
                   <th>SBAR</th>
-                  <th>Actions</th>
+                  <th>ACTIONS</th>
                 </tr>
               </thead>
               <tbody id="tbody"></tbody>
@@ -422,12 +419,7 @@
       </div>
     </main>
 
-    <footer>
-      Local-only tool — no data is uploaded or stored externally. Designed for
-      ward/floor admission &amp; endorsement workflow.
-    </footer>
-    <!-- test -->
-    <!-- script MUST be at the very end of body so all elements exist first -->
+    <footer>Local‑only tool — no data uploaded.</footer>
     <script src="js/script.js"></script>
   </body>
 </html>

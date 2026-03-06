@@ -687,6 +687,24 @@ tbody tr:last-child td {
   gap: 6px;
 }
 
+.table-wrap {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 520px;
+  white-space: nowrap;
+}
+
+table td {
+  white-space: nowrap !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
+}
+
+table th {
+  white-space: nowrap;
+}
+
 /* ── FOOTER ── */
 footer {
   text-align: center;
