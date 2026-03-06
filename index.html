@@ -66,7 +66,7 @@
           <div class="filter-field">
             <label class="filter-label">Patient Status</label>
             <select id="filterStatus">
-              <option value="">All Statuses</option>
+              <option value="" selected>All Statuses</option>
               <option>Admitted</option>
               <option>For Transfer</option>
               <option>For OR</option>
@@ -131,7 +131,7 @@
             <div class="field col-3">
               <label>Patient Status</label
               ><select id="patientStatus">
-                <option>Admitted</option>
+                <option selected>Admitted</option>
                 <option>For Transfer</option>
                 <option>For OR</option>
                 <option>Discharged</option>
@@ -208,7 +208,8 @@
                 id="age"
                 type="number"
                 min="0"
-                placeholder="Auto/Manual"
+                placeholder="Auto"
+                readonly
               />
             </div>
             <div class="field col-3">
