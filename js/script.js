@@ -561,6 +561,141 @@ function exportCsv() {
   setStatus("CSV exported");
 }
 
+function exportToExcel() {
+  if (!wardRows.length) {
+    alert("No data to export");
+    return;
+  }
+
+  console.log("Exporting to Excel with", wardRows.length, "patients");
+
+  // Columns that match your table WITHOUT the Actions column
+  var cols = [
+    "Shift",
+    "Status",
+    "Room/Bed",
+    "MRN",
+    "Patient Name",
+    "Risk Flags",
+    "Diagnosis",
+    "BP (mmHg)",
+    "HR (bpm)",
+    "RR (/min)",
+    "Temp (°C)",
+    "SpO₂ (%)",
+    "Pain",
+    "Precautions",
+    "Checklist",
+    "SBAR",
+  ];
+
+  // Create data array with headers
+  var data = [cols];
+
+  // Add patient data
+  wardRows.forEach(function (r) {
+    data.push([
+      r.shift || "",
+      r.patientStatus || "",
+      (r.room || "") + (r.bed ? "/" + r.bed : ""),
+      r.mrn || "",
+      r.patientName || "",
+      getRiskFlags(r),
+      r.workingDx || "",
+      r.bpRaw || "",
+      r.hrRaw || "",
+      r.rrRaw || "",
+      r.tempRaw || "",
+      r.spo2Raw || "",
+      r.painRaw || "",
+      r.precautions || "",
+      getChecklistSummary(r.checklist),
+      getSBAR(r),
+    ]);
+  });
+
+  // Create worksheet
+  var wb = XLSX.utils.book_new();
+  var ws = XLSX.utils.aoa_to_sheet(data);
+
+  // Auto-calculate column widths based on content
+  var colWidths = [];
+  for (var i = 0; i < cols.length; i++) {
+    var maxLength = cols[i].length; // Start with header length
+
+    // Check all rows for this column
+    for (var j = 1; j < data.length; j++) {
+      var cellValue = data[j][i] ? data[j][i].toString() : "";
+      if (cellValue.length > maxLength) {
+        maxLength = cellValue.length;
+      }
+    }
+
+    // Add some padding (min width 8, max width 50)
+    var width = Math.min(50, Math.max(8, maxLength + 2));
+    colWidths.push({ wch: width });
+  }
+
+  ws["!cols"] = colWidths;
+
+  // Create header style
+  var headerStyle = {
+    fill: {
+      patternType: "solid",
+      fgColor: { rgb: "FFDA4F8E" }, // Pink color with FF prefix for solid
+    },
+    font: {
+      color: { rgb: "FFFFFFFF" }, // White with FF prefix
+      bold: true,
+      sz: 12,
+      name: "Arial",
+    },
+    alignment: {
+      horizontal: "center",
+      vertical: "center",
+    },
+    border: {
+      bottom: {
+        style: "thin",
+        color: { rgb: "FFB8366E" },
+      },
+      top: {
+        style: "thin",
+        color: { rgb: "FFB8366E" },
+      },
+      left: {
+        style: "thin",
+        color: { rgb: "FFB8366E" },
+      },
+      right: {
+        style: "thin",
+        color: { rgb: "FFB8366E" },
+      },
+    },
+  };
+
+  // Apply pink background to ALL header cells
+  for (var C = 0; C < cols.length; C++) {
+    var cellAddress = XLSX.utils.encode_cell({ r: 0, c: C });
+
+    // Create cell if it doesn't exist
+    if (!ws[cellAddress]) {
+      ws[cellAddress] = { t: "s", v: cols[C] };
+    }
+
+    // Apply the style
+    ws[cellAddress].s = headerStyle;
+  }
+
+  // Add workbook and save
+  XLSX.utils.book_append_sheet(wb, ws, "Ward Admissions");
+
+  var fileName = "ward_admissions_" + isoNow().replace(/[: ]/g, "-") + ".xlsx";
+  XLSX.writeFile(wb, fileName);
+
+  setStatus("Excel file exported with pink headers!");
+}
+
 function saveJson() {
   if (!wardRows.length) {
     alert("No data to save");
@@ -619,6 +754,131 @@ function loadJson() {
   };
 }
 
+// Vital Signs Alert Functions
+function checkSpO2(el) {
+  var v = parseFloat(el.value);
+  if (isNaN(v)) {
+    removeAlert(el);
+    return;
+  }
+  if (v < 80) {
+    setAlert(el, "v-critical", "CRITICAL");
+  } else if (v < 95) {
+    setAlert(el, "v-warning", "LOW");
+  } else {
+    removeAlert(el);
+  }
+}
+
+function checkBP(el) {
+  var v = el.value.trim();
+  var m = /^(\d+)\/(\d+)$/.exec(v);
+  if (!m) {
+    removeAlert(el);
+    return;
+  }
+  var sys = parseInt(m[1]);
+  var dia = parseInt(m[2]);
+
+  if (sys >= 180 || dia >= 110 || sys < 80) {
+    setAlert(el, "v-critical", "CRITICAL");
+  } else if (sys >= 140 || dia >= 90) {
+    setAlert(el, "v-warning", "HIGH");
+  } else {
+    removeAlert(el);
+  }
+}
+
+function checkHR(el) {
+  var v = parseFloat(el.value);
+  if (isNaN(v)) {
+    removeAlert(el);
+    return;
+  }
+  if (v > 130 || v < 40) {
+    setAlert(el, "v-critical", "CRITICAL");
+  } else if (v > 100 || v < 60) {
+    setAlert(el, "v-warning", "ABNORMAL");
+  } else {
+    removeAlert(el);
+  }
+}
+
+function checkRR(el) {
+  var v = parseFloat(el.value);
+  if (isNaN(v)) {
+    removeAlert(el);
+    return;
+  }
+  if (v > 28 || v < 8) {
+    setAlert(el, "v-critical", "CRITICAL");
+  } else if (v > 20) {
+    setAlert(el, "v-orange", "HIGH");
+  } else {
+    removeAlert(el);
+  }
+}
+
+function checkTemp(el) {
+  var v = parseFloat(el.value);
+  if (isNaN(v)) {
+    removeAlert(el);
+    return;
+  }
+  if (v >= 39.0) {
+    setAlert(el, "v-critical", "HIGH FEVER");
+  } else if (v >= 38.0) {
+    setAlert(el, "v-orange", "FEVER");
+  } else if (v < 36.0) {
+    setAlert(el, "v-warning", "HYPOTHERMIA");
+  } else {
+    removeAlert(el);
+  }
+}
+
+function checkPain(el) {
+  var v = parseFloat(el.value);
+  if (isNaN(v)) {
+    removeAlert(el);
+    return;
+  }
+  if (v >= 8) {
+    setAlert(el, "v-critical", "SEVERE");
+  } else if (v >= 6) {
+    setAlert(el, "v-orange", "MODERATE");
+  } else {
+    removeAlert(el);
+  }
+}
+
+function setAlert(el, className, text) {
+  // Remove any existing alert classes
+  el.classList.remove("v-critical", "v-warning", "v-orange");
+  el.classList.add(className);
+
+  // Create or update alert tag
+  var wrap = el.parentNode;
+  var existingTag = wrap.querySelector(".alert-tag");
+  if (existingTag) {
+    existingTag.textContent = text;
+    existingTag.className = "alert-tag " + className.replace("v-", "");
+  } else {
+    var tag = document.createElement("span");
+    tag.className = "alert-tag " + className.replace("v-", "");
+    tag.textContent = text;
+    wrap.appendChild(tag);
+  }
+}
+
+function removeAlert(el) {
+  el.classList.remove("v-critical", "v-warning", "v-orange");
+  var wrap = el.parentNode;
+  var tag = wrap.querySelector(".alert-tag");
+  if (tag) {
+    tag.remove();
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   if ($("age")) $("age").readOnly = true;
 
@@ -636,7 +896,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   if ($("btnAddRow")) $("btnAddRow").addEventListener("click", doAddRow);
-  if ($("btnExportCsv")) $("btnExportCsv").addEventListener("click", exportCsv);
+  if ($("btnExportCsv")) {
+    $("btnExportCsv").addEventListener("click", function () {
+      // Directly export to Excel without asking
+      exportToExcel();
+    });
+  }
   if ($("btnSaveJson")) $("btnSaveJson").addEventListener("click", saveJson);
   if ($("btnLoadJson")) $("btnLoadJson").addEventListener("click", loadJson);
 

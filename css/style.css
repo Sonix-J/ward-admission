@@ -701,6 +701,56 @@ tbody tr.row-alert-ora:hover td {
   color: #3730a3;
 }
 
+/* Vital Signs Alert Colors */
+.vital-wrap input.v-critical {
+  border-color: #dc2626 !important;
+  background-color: #fef2f2 !important;
+  color: #b91c1c !important;
+  font-weight: 700 !important;
+}
+
+.vital-wrap input.v-warning {
+  border-color: #eab308 !important;
+  background-color: #fef9c3 !important;
+  color: #854d0e !important;
+  font-weight: 600 !important;
+}
+
+.vital-wrap input.v-orange {
+  border-color: #f97316 !important;
+  background-color: #fff7ed !important;
+  color: #9a3412 !important;
+  font-weight: 600 !important;
+}
+
+.alert-tag {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.alert-tag.critical {
+  background-color: #dc2626;
+  color: white;
+}
+
+.alert-tag.warning {
+  background-color: #eab308;
+  color: white;
+}
+
+.alert-tag.orange {
+  background-color: #f97316;
+  color: white;
+}
+
 footer {
   text-align: center;
   padding: 22px;
