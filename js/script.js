@@ -83,15 +83,16 @@ function getRiskFlags(r) {
 }
 
 function getChecklistSummary(ck) {
-  if (!ck) return "0/6";
-  var n = 0;
-  if (ck.idband) n++;
-  if (ck.allergy) n++;
-  if (ck.vitals) n++;
-  if (ck.iv) n++;
-  if (ck.consent) n++;
-  if (ck.orders) n++;
-  return n + "/6";
+  if (!ck) return "None";
+  var items = [];
+  if (ck.idband) items.push("ID Band");
+  if (ck.allergy) items.push("Allergies Verified");
+  if (ck.vitals) items.push("Initial VS");
+  if (ck.iv) items.push("IV Access");
+  if (ck.consent) items.push("Consent");
+  if (ck.orders) items.push("Orders");
+  if (ck.safety) items.push("Safety & Comfort");
+  return items.length ? items.join(" / ") : "None";
 }
 
 function getSBAR(r) {
@@ -278,6 +279,10 @@ function renderTable() {
     // CHECKLIST
     var td15 = document.createElement("td");
     td15.textContent = getChecklistSummary(r.checklist);
+    td15.style.whiteSpace = "nowrap";
+    td15.style.fontSize = "11.5px";
+    td15.style.maxWidth = "none";
+    td15.style.overflow = "visible";
     tr.appendChild(td15);
 
     // SBAR
@@ -371,6 +376,7 @@ function clearAllFormFields() {
     "ck_iv",
     "ck_consent",
     "ck_orders",
+    "ck_safety",
   ].forEach(function (id) {
     if ($(id)) $(id).checked = false;
   });
@@ -468,6 +474,7 @@ function doAddRow() {
       iv: $("ck_iv") ? $("ck_iv").checked : false,
       consent: $("ck_consent") ? $("ck_consent").checked : false,
       orders: $("ck_orders") ? $("ck_orders").checked : false,
+      safety: $("ck_safety") ? $("ck_safety").checked : false,
     },
   };
 

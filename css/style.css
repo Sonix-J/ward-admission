@@ -496,7 +496,7 @@ input[readonly] {
 }
 .ck-grid-row {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(7, 1fr);
   gap: 10px;
   padding: 16px 22px;
 }
@@ -640,9 +640,6 @@ tbody td {
   color: var(--ink);
   vertical-align: middle;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 220px;
   transition: background 0.08s;
 }
 tbody tr:nth-child(even) td {
@@ -872,7 +869,7 @@ tbody tr {
     grid-template-columns: repeat(3, 1fr);
   }
   .ck-grid-row {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
   .admission-clinical-row .fg {
     gap: 10px;
