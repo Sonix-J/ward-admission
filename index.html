@@ -85,7 +85,7 @@
       <div class="card">
         <div class="card-head">
           <span class="card-head-title">Patient Information</span>
-          <span class="card-head-sub">Demographics & contacts</span>
+          <span class="card-head-sub">Demographics &amp; contacts</span>
         </div>
         <div class="fsec">
           <div class="fg">
@@ -177,47 +177,41 @@
         </div>
       </div>
 
-      <!-- Side-by-side container for Admission and Clinical Snapshot -->
       <div class="admission-clinical-row">
-        <!-- New Admission Card - Restructured -->
+        <!-- New Admission Card -->
         <div class="card">
           <div class="card-head">
             <span class="card-head-title">New Admission</span>
-            <span class="card-head-sub">Ward, shift & attending details</span>
+            <span class="card-head-sub"
+              >Ward, shift &amp; attending details</span
+            >
           </div>
           <div class="fsec">
-            <!-- Row 1: Facility and Ward -->
             <div class="fg" style="margin-bottom: 16px">
               <div class="field c6">
-                <label>Facility / Hospital</label>
-                <input
+                <label>Facility / Hospital</label
+                ><input
                   id="facility"
                   placeholder="e.g., Southwestern University Hospital"
                 />
               </div>
               <div class="field c6">
-                <label>Ward / Unit</label>
-                <input id="ward" placeholder="e.g., Ward 3A" />
+                <label>Ward / Unit</label
+                ><input id="ward" placeholder="e.g., Ward 3A" />
               </div>
             </div>
-
-            <!-- Row 2: Room, Bed, MRN -->
             <div class="fg" style="margin-bottom: 16px">
               <div class="field c4">
-                <label>Room</label>
-                <input id="room" placeholder="305" />
+                <label>Room</label><input id="room" placeholder="305" />
               </div>
               <div class="field c4">
-                <label>Bed</label>
-                <input id="bed" placeholder="B2" />
+                <label>Bed</label><input id="bed" placeholder="B2" />
               </div>
               <div class="field c4">
-                <label>MRN / Hospital No.</label>
-                <input id="mrn" placeholder="24-001233" />
+                <label>MRN / Hospital No.</label
+                ><input id="mrn" placeholder="24-001233" />
               </div>
             </div>
-
-            <!-- Row 3: Admission Date/Time -->
             <div class="fg" style="margin-bottom: 16px">
               <div class="field c12">
                 <label>Admission Date/Time <span class="req">*</span></label>
@@ -225,8 +219,6 @@
                 <span class="hint">Date and time of admission</span>
               </div>
             </div>
-
-            <!-- Row 4: Shift and Patient Status -->
             <div class="fg" style="margin-bottom: 16px">
               <div class="field c6">
                 <label>Shift <span class="req">*</span></label>
@@ -248,8 +240,6 @@
                 </select>
               </div>
             </div>
-
-            <!-- Row 5: Admission Type and Service -->
             <div class="fg" style="margin-bottom: 16px">
               <div class="field c6">
                 <label>Admission Type</label>
@@ -275,24 +265,20 @@
                 </select>
               </div>
             </div>
-
-            <!-- Row 6: Attending Physician and Nurse on Duty -->
             <div class="fg" style="margin-bottom: 16px">
               <div class="field c6">
-                <label>Attending Physician</label>
-                <input id="attending" placeholder="Dr. Juan Dela Cruz" />
+                <label>Attending Physician</label
+                ><input id="attending" placeholder="Dr. Juan Dela Cruz" />
               </div>
               <div class="field c6">
-                <label>Nurse on Duty</label>
-                <input id="nurseOnDuty" placeholder="Full name or initials" />
+                <label>Nurse on Duty</label
+                ><input id="nurseOnDuty" placeholder="Full name or initials" />
               </div>
             </div>
-
-            <!-- Row 7: Diet Order -->
             <div class="fg">
               <div class="field c12">
-                <label>Diet Order</label>
-                <input
+                <label>Diet Order</label
+                ><input
                   id="diet"
                   placeholder="NPO; Soft diet; Diabetic; Low salt; Regular; Clear liquids..."
                 />
@@ -305,6 +291,15 @@
         <div class="card">
           <div class="card-head">
             <span class="card-head-title">Clinical Snapshot</span>
+            <!-- ===== PEDIATRIC TOGGLE ===== -->
+            <label
+              class="pedia-toggle"
+              id="pediaToggleLabel"
+              title="Check if this is a pediatric patient — adult vital sign alerts will be suppressed"
+            >
+              <input type="checkbox" id="isPediatric" />
+              <span class="pedia-badge">Pediatric Patient</span>
+            </label>
           </div>
           <div class="fsec">
             <div class="fg">
@@ -349,6 +344,15 @@
               </div>
               <div class="field c12">
                 <label>Vital Signs</label>
+                <!-- Notice banner shown when pediatric mode is active -->
+                <div
+                  id="pediaVitalsNotice"
+                  class="pedia-vitals-notice"
+                  style="display: none"
+                >
+                  <strong>Pediatric mode</strong> — adult vital sign alerts are
+                  disabled. Use age-appropriate reference ranges.
+                </div>
                 <div class="vitals-grid">
                   <div class="vf">
                     <div class="vital-wrap">
@@ -502,6 +506,7 @@
                 <th>ROOM/BED</th>
                 <th>MRN</th>
                 <th>PATIENT</th>
+                <th>TYPE</th>
                 <th>RISK FLAGS</th>
                 <th>DIAGNOSIS</th>
                 <th>BP</th>

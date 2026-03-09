@@ -66,12 +66,7 @@ body {
 }
 
 .header {
-  background: linear-gradient(
-    110deg,
-    var(--brand-deep) 0%,
-    var(--brand) 55%,
-    #e8669a 100%
-  );
+  background: var(--brand);
   color: #fff;
   position: sticky;
   top: 0;
@@ -384,50 +379,78 @@ input[readonly] {
 
 .vital-wrap {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
-.vital-wrap input.v-red {
-  border-color: var(--alert-red) !important;
-  background: var(--alert-red-bg) !important;
-  color: var(--alert-red) !important;
-  font-weight: 700 !important;
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
-}
-.vital-wrap input.v-orange {
-  border-color: var(--alert-ora) !important;
-  background: var(--alert-ora-bg) !important;
-  color: var(--alert-ora) !important;
-  font-weight: 700 !important;
-  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.13) !important;
-}
-.vital-wrap input.v-yellow {
-  border-color: var(--alert-yel) !important;
-  background: var(--alert-yel-bg) !important;
-  color: var(--alert-yel) !important;
-  font-weight: 700 !important;
-}
+
+/* Alert tag now sits ABOVE the input as a block element — no overlap */
 .vital-wrap .alert-tag {
-  position: absolute;
-  right: 7px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 10px;
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 9.5px;
   font-weight: 800;
-  padding: 1px 6px;
-  border-radius: 5px;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 6px;
   pointer-events: none;
   white-space: nowrap;
+  order: -1; /* renders above the input */
 }
-.vital-wrap .alert-tag.red {
-  background: var(--alert-red);
+
+/* Brand-palette alert colours — critical uses deep brand, warning uses brand-light */
+.vital-wrap .alert-tag.critical {
+  background: var(--brand-deep);
   color: #fff;
+  box-shadow: 0 1px 4px rgba(140, 31, 82, 0.35);
+}
+.vital-wrap .alert-tag.warning {
+  background: var(--brand);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(184, 54, 110, 0.25);
 }
 .vital-wrap .alert-tag.orange {
-  background: var(--alert-ora);
+  background: var(--brand-dark);
   color: #fff;
+  box-shadow: 0 1px 4px rgba(184, 54, 110, 0.3);
 }
-.vital-wrap .alert-tag.yellow {
-  background: var(--alert-yel);
-  color: #fff;
+
+/* Input border/background when in alert state */
+.vital-wrap input.v-critical {
+  border-color: var(--brand-deep) !important;
+  background: var(--brand-pale) !important;
+  color: var(--brand-deep) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 0 3px rgba(140, 31, 82, 0.13) !important;
+}
+.vital-wrap input.v-warning {
+  border-color: var(--brand) !important;
+  background: var(--brand-pale) !important;
+  color: var(--brand-dark) !important;
+  font-weight: 600 !important;
+  box-shadow: 0 0 0 3px rgba(218, 79, 142, 0.13) !important;
+}
+.vital-wrap input.v-orange {
+  border-color: var(--brand-dark) !important;
+  background: var(--brand-pale) !important;
+  color: var(--brand-dark) !important;
+  font-weight: 600 !important;
+  box-shadow: 0 0 0 3px rgba(184, 54, 110, 0.13) !important;
+}
+
+/* Keep legacy red/yellow classes from old code harmless */
+.vital-wrap input.v-red {
+  border-color: var(--brand-deep) !important;
+  background: var(--brand-pale) !important;
+  color: var(--brand-deep) !important;
+  font-weight: 700 !important;
+}
+.vital-wrap input.v-yellow {
+  border-color: var(--brand) !important;
+  background: var(--brand-pale) !important;
+  color: var(--brand-dark) !important;
+  font-weight: 600 !important;
 }
 
 .vitals-grid {
@@ -456,13 +479,11 @@ input[readonly] {
   gap: 20px;
   align-items: stretch;
 }
-
 .admission-clinical-row .card {
   height: 100%;
   display: flex;
   flex-direction: column;
 }
-
 .admission-clinical-row .fsec {
   flex: 1;
 }
@@ -701,55 +722,9 @@ tbody tr.row-alert-ora:hover td {
   color: #3730a3;
 }
 
-/* Vital Signs Alert Colors */
-.vital-wrap input.v-critical {
-  border-color: #dc2626 !important;
-  background-color: #fef2f2 !important;
-  color: #b91c1c !important;
-  font-weight: 700 !important;
-}
+/* v-critical / v-warning / v-orange input styles are defined in the .vital-wrap block above */
 
-.vital-wrap input.v-warning {
-  border-color: #eab308 !important;
-  background-color: #fef9c3 !important;
-  color: #854d0e !important;
-  font-weight: 600 !important;
-}
-
-.vital-wrap input.v-orange {
-  border-color: #f97316 !important;
-  background-color: #fff7ed !important;
-  color: #9a3412 !important;
-  font-weight: 600 !important;
-}
-
-.alert-tag {
-  position: absolute;
-  right: 5px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  pointer-events: none;
-  white-space: nowrap;
-}
-
-.alert-tag.critical {
-  background-color: #dc2626;
-  color: white;
-}
-
-.alert-tag.warning {
-  background-color: #eab308;
-  color: white;
-}
-
-.alert-tag.orange {
-  background-color: #f97316;
-  color: white;
-}
+/* alert-tag styles are defined in the .vital-wrap block above */
 
 footer {
   text-align: center;
@@ -759,6 +734,94 @@ footer {
   font-weight: 600;
   border-top: 1px solid var(--border);
 }
+
+/* ============================================================
+   PEDIATRIC PATIENT TOGGLE  — new styles
+   ============================================================ */
+
+/* Toggle label in the card header */
+.pedia-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: auto;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pedia-toggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--brand);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* The visible badge part */
+.pedia-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  border: 1.5px solid var(--brand-light);
+  background: var(--brand-pale);
+  color: var(--brand-dark);
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s,
+    box-shadow 0.15s;
+  white-space: nowrap;
+}
+
+/* When the checkbox is checked, the label gets .pedia-active class via JS */
+.pedia-active .pedia-badge {
+  background: var(--brand);
+  border-color: var(--brand-dark);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(184, 54, 110, 0.3);
+}
+
+/* Notice banner inside the vitals section */
+.pedia-vitals-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  margin-bottom: 10px;
+  border-radius: var(--r-sm);
+  background: var(--brand-pale);
+  border: 1.5px solid var(--brand-light);
+  color: var(--brand-dark);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Patient type pill in the ward list table */
+.type-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.type-pedia {
+  background: var(--brand-pale);
+  color: var(--brand-dark);
+  border: 1px solid var(--brand-light);
+}
+.type-adult {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+}
+
+/* ============================================================ */
 
 @keyframes fadeUp {
   from {
@@ -799,7 +862,7 @@ tbody tr {
   animation: rowIn 0.18s ease both;
 }
 
-/* Responsive Design - Mobile */
+/* Responsive */
 @media (max-width: 980px) {
   .admission-clinical-row {
     grid-template-columns: 1fr;
@@ -811,7 +874,6 @@ tbody tr {
   .ck-grid-row {
     grid-template-columns: repeat(3, 1fr);
   }
-
   .admission-clinical-row .fg {
     gap: 10px;
   }
@@ -828,23 +890,19 @@ tbody tr {
     padding: 12px;
     gap: 13px;
   }
-
   .admission-clinical-row .c4,
   .admission-clinical-row .c6,
   .admission-clinical-row .c12 {
     grid-column: span 12;
   }
-
   .admission-clinical-row .fg {
     margin-bottom: 12px !important;
   }
-
   .admission-clinical-row input,
   .admission-clinical-row select {
     font-size: 14px;
     padding: 10px 13px;
   }
-
   .c2,
   .c3,
   .c4,
@@ -867,5 +925,8 @@ tbody tr {
   .filterbar .ff input,
   .filterbar .ff select {
     width: 100%;
+  }
+  .pedia-toggle {
+    margin-left: 0;
   }
 }

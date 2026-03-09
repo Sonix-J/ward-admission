@@ -1,5 +1,4 @@
 // Ward Admission & Census - script.js
-// SUPER DEBUG - ADD THIS AT THE TOP OF YOUR FILE
 console.log("🔥 SCRIPT LOADED - Ward Admission System");
 window.debugWard = function () {
   console.log("wardRows:", wardRows);
@@ -13,6 +12,14 @@ function $(id) {
 function setStatus(text) {
   var el = $("statusBadge");
   if (el) el.textContent = text;
+}
+
+// ===== PEDIATRIC MODE HELPER =====
+// Returns true if the "Pediatric Patient" checkbox is checked.
+// When true, all adult vital sign alert checks are skipped.
+function isPediatricMode() {
+  var cb = $("isPediatric");
+  return cb ? cb.checked : false;
 }
 
 function isoNow() {
@@ -110,11 +117,9 @@ function masked(v) {
   return v ? "••••••" : "";
 }
 
-// Read a filter element value safely - only from the filter bar, never from form
 function fval(id) {
   var el = document.getElementById(id);
   if (!el) return "";
-  // Safety: only read from elements that are ACTUALLY filter elements
   var allowed = ["filterShift", "filterStatus", "filterNurse", "filterSearch"];
   for (var i = 0; i < allowed.length; i++) {
     if (allowed[i] === id) return el.value || "";
@@ -127,8 +132,6 @@ function matchesFilters(r) {
   var fst = fval("filterStatus");
   var fn = fval("filterNurse").trim().toLowerCase();
   var q = fval("filterSearch").trim().toLowerCase();
-
-  // Only filter if the filter actually has a value
   if (fs && fs !== "" && (r.shift || "") !== fs) return false;
   if (fst && fst !== "" && (r.patientStatus || "") !== fst) return false;
   if (fn && fn !== "" && (r.nurseOnDuty || "").toLowerCase().indexOf(fn) < 0)
@@ -150,26 +153,17 @@ function matchesFilters(r) {
 }
 
 function renderTable() {
-  console.log("🎨 renderTable CALLED");
-  console.log("wardRows length:", wardRows.length);
-
+  console.log("🎨 renderTable CALLED, rows:", wardRows.length);
   var tbody = $("tbody");
   if (!tbody) {
     console.error("❌ tbody not found!");
     return;
   }
-
-  console.log("Rendering", wardRows.length, "patients");
   tbody.innerHTML = "";
 
-  // Enable/disable export button based on patients
   var btnExp = $("btnExportCsv");
-  if (btnExp) {
-    btnExp.disabled = wardRows.length === 0;
-    console.log("Export button disabled?", btnExp.disabled);
-  }
+  if (btnExp) btnExp.disabled = wardRows.length === 0;
 
-  // Update row count display
   var rowCount = $("rowCount");
   if (rowCount) {
     rowCount.textContent =
@@ -181,21 +175,18 @@ function renderTable() {
   }
 
   if (wardRows.length === 0) {
-    console.log("No patients, showing empty message");
     tbody.innerHTML =
-      '<tr><td colspan="17" style="text-align:center;padding:40px;color:#b07090;">No patients yet. Add one!</td></tr>';
+      '<tr><td colspan="18" style="text-align:center;padding:40px;color:#b07090;">No patients yet. Add one!</td></tr>';
     return;
   }
 
-  // Get privacy mode state
   var privacy = $("privacyMode") ? $("privacyMode").checked : false;
 
-  // Render each patient row
   for (var i = 0; i < wardRows.length; i++) {
     var r = wardRows[i];
     var tr = document.createElement("tr");
 
-    // Column 1: SHIFT
+    // SHIFT
     var td1 = document.createElement("td");
     td1.innerHTML =
       '<span class="shift-chip shift-' +
@@ -205,7 +196,7 @@ function renderTable() {
       "</span>";
     tr.appendChild(td1);
 
-    // Column 2: STATUS
+    // STATUS
     var td2 = document.createElement("td");
     td2.innerHTML =
       '<span class="status-pill ' +
@@ -215,72 +206,81 @@ function renderTable() {
       "</span>";
     tr.appendChild(td2);
 
-    // Column 3: ROOM/BED
+    // ROOM/BED
     var td3 = document.createElement("td");
     td3.textContent = (r.room || "—") + (r.bed ? "/" + r.bed : "");
     tr.appendChild(td3);
 
-    // Column 4: MRN
+    // MRN
     var td4 = document.createElement("td");
     td4.textContent = privacy ? masked(r.mrn) : r.mrn || "—";
     tr.appendChild(td4);
 
-    // Column 5: PATIENT
+    // PATIENT
     var td5 = document.createElement("td");
     td5.textContent = privacy ? "••••••" : r.patientName || "—";
     tr.appendChild(td5);
 
-    // Column 6: RISK FLAGS
+    // TYPE (Pedia / Adult)
+    var td5b = document.createElement("td");
+    if (r.isPediatric) {
+      td5b.innerHTML = '<span class="type-pill type-pedia">Pedia</span>';
+    } else {
+      td5b.innerHTML = '<span class="type-pill type-adult">Adult</span>';
+    }
+    tr.appendChild(td5b);
+
+    // RISK FLAGS
     var td6 = document.createElement("td");
     td6.textContent = getRiskFlags(r);
     tr.appendChild(td6);
 
-    // Column 7: DIAGNOSIS
+    // DIAGNOSIS
     var td7 = document.createElement("td");
     td7.textContent = r.workingDx || "—";
     tr.appendChild(td7);
 
-    // Column 8: BP
+    // BP
     var td8 = document.createElement("td");
     td8.textContent = r.bpRaw || "—";
     tr.appendChild(td8);
 
-    // Column 9: HR
+    // HR
     var td9 = document.createElement("td");
     td9.textContent = r.hrRaw || "—";
     tr.appendChild(td9);
 
-    // Column 10: RR
+    // RR
     var td10 = document.createElement("td");
     td10.textContent = r.rrRaw || "—";
     tr.appendChild(td10);
 
-    // Column 11: TEMP
+    // TEMP
     var td11 = document.createElement("td");
     td11.textContent = r.tempRaw || "—";
     tr.appendChild(td11);
 
-    // Column 12: SpO₂
+    // SpO2
     var td12 = document.createElement("td");
     td12.textContent = r.spo2Raw || "—";
     tr.appendChild(td12);
 
-    // Column 13: PAIN
+    // PAIN
     var td13 = document.createElement("td");
     td13.textContent = r.painRaw || "—";
     tr.appendChild(td13);
 
-    // Column 14: PRECAUTIONS
+    // PRECAUTIONS
     var td14 = document.createElement("td");
     td14.textContent = r.precautions || "—";
     tr.appendChild(td14);
 
-    // Column 15: CHECKLIST
+    // CHECKLIST
     var td15 = document.createElement("td");
     td15.textContent = getChecklistSummary(r.checklist);
     tr.appendChild(td15);
 
-    // Column 16: SBAR
+    // SBAR
     var td16 = document.createElement("td");
     td16.style.whiteSpace = "nowrap";
     td16.style.fontSize = "11px";
@@ -288,10 +288,9 @@ function renderTable() {
     td16.textContent = getSBAR(r);
     tr.appendChild(td16);
 
-    // Column 17: ACTIONS (with delete button)
+    // ACTIONS
     var td17 = document.createElement("td");
     td17.style.whiteSpace = "nowrap";
-
     var deleteBtn = document.createElement("button");
     deleteBtn.className = "btn btn-sm btn-danger";
     deleteBtn.textContent = "🗑";
@@ -306,7 +305,6 @@ function renderTable() {
         }
       };
     })(i);
-
     td17.appendChild(deleteBtn);
     tr.appendChild(td17);
 
@@ -317,9 +315,6 @@ function renderTable() {
 }
 
 function clearAllFormFields() {
-  console.log("Clearing form fields...");
-
-  // Clear all input fields - expanded list
   [
     "lastName",
     "firstName",
@@ -348,14 +343,11 @@ function clearAllFormFields() {
     "orders",
     "attending",
     "diet",
+    "nursingInterventions",
   ].forEach(function (id) {
-    if ($(id)) {
-      $(id).value = "";
-      console.log("Cleared:", id);
-    }
+    if ($(id)) $(id).value = "";
   });
 
-  // Reset all select dropdowns
   [
     "shift",
     "patientStatus",
@@ -365,19 +357,13 @@ function clearAllFormFields() {
     "sex",
     "civilStatus",
     "codeStatus",
+    "bloodType",
   ].forEach(function (id) {
-    if ($(id)) {
-      $(id).value = "";
-      console.log("Reset select:", id);
-    }
+    if ($(id)) $(id).value = "";
   });
 
-  // Reset patient status to default if needed
-  if ($("patientStatus")) {
-    $("patientStatus").value = "Admitted";
-  }
+  if ($("patientStatus")) $("patientStatus").value = "Admitted";
 
-  // Uncheck all checkboxes
   [
     "ck_idband",
     "ck_allergy",
@@ -386,18 +372,20 @@ function clearAllFormFields() {
     "ck_consent",
     "ck_orders",
   ].forEach(function (id) {
-    if ($(id)) {
-      $(id).checked = false;
-      console.log("Unchecked:", id);
-    }
+    if ($(id)) $(id).checked = false;
   });
 
-  // Clear DOB
-  if ($("dob")) {
-    $("dob").value = "";
-  }
+  if ($("dob")) $("dob").value = "";
 
-  console.log("Form cleared");
+  // Reset pediatric checkbox and clear all vital alerts
+  if ($("isPediatric")) $("isPediatric").checked = false;
+  updatePediatricUI();
+
+  // Clear vital alert states visually
+  ["bp", "hr", "rr", "temp", "spo2", "pain"].forEach(function (id) {
+    var el = $(id);
+    if (el) removeAlert(el);
+  });
 }
 
 function clearAllFilters() {
@@ -408,52 +396,71 @@ function clearAllFilters() {
   );
 }
 
+// ===== PEDIATRIC UI UPDATE =====
+// Shows/hides the notice banner and updates the toggle label styling.
+function updatePediatricUI() {
+  var isPedia = isPediatricMode();
+  var notice = $("pediaVitalsNotice");
+  var label = $("pediaToggleLabel");
+
+  if (notice) notice.style.display = isPedia ? "flex" : "none";
+  if (label) {
+    if (isPedia) {
+      label.classList.add("pedia-active");
+    } else {
+      label.classList.remove("pedia-active");
+    }
+  }
+
+  // Re-run all current vital checks so alerts appear/disappear immediately
+  ["bp", "hr", "rr", "temp", "spo2", "pain"].forEach(function (id) {
+    var el = $(id);
+    if (el && el.value) {
+      // Trigger the appropriate check function
+      if (id === "bp") checkBP(el);
+      else if (id === "hr") checkHR(el);
+      else if (id === "rr") checkRR(el);
+      else if (id === "temp") checkTemp(el);
+      else if (id === "spo2") checkSpO2(el);
+      else if (id === "pain") checkPain(el);
+    } else if (el) {
+      removeAlert(el);
+    }
+  });
+}
+
 function doAddRow() {
   console.log("🔵 doAddRow function STARTED");
 
-  // Step 1: Read ONLY the form values we actually need
   var lastName = $("lastName") ? $("lastName").value : "";
   var firstName = $("firstName") ? $("firstName").value : "";
   var middleName = $("middleName") ? $("middleName").value : "";
 
-  // Validate
   if (!lastName || !firstName) {
     alert("Please fill in Last Name and First Name");
     return;
   }
 
-  // Build patient name
   var patientName = lastName + ", " + firstName;
-  if (middleName) {
-    patientName += " " + middleName;
-  }
+  if (middleName) patientName += " " + middleName;
 
-  // Get all form values
   var row = {
-    // Basic info
     shift: $("shift") ? $("shift").value : "",
     patientStatus: $("patientStatus") ? $("patientStatus").value : "Admitted",
     room: $("room") ? $("room").value : "",
     bed: $("bed") ? $("bed").value : "",
     mrn: $("mrn") ? $("mrn").value : "",
     patientName: patientName,
-
-    // Clinical
+    isPediatric: isPediatricMode(), // ← save pediatric flag with the row
     workingDx: $("workingDx") ? $("workingDx").value : "",
     precautions: $("precautions") ? $("precautions").value : "",
-
-    // Vitals
     bpRaw: $("bp") ? $("bp").value : "",
     hrRaw: $("hr") ? $("hr").value : "",
     rrRaw: $("rr") ? $("rr").value : "",
     tempRaw: $("temp") ? $("temp").value : "",
     spo2Raw: $("spo2") ? $("spo2").value : "",
     painRaw: $("pain") ? $("pain").value : "",
-
-    // Nurse
     nurseOnDuty: $("nurseOnDuty") ? $("nurseOnDuty").value : "",
-
-    // Checklist
     checklist: {
       idband: $("ck_idband") ? $("ck_idband").checked : false,
       allergy: $("ck_allergy") ? $("ck_allergy").checked : false,
@@ -464,7 +471,6 @@ function doAddRow() {
     },
   };
 
-  // Build vitals string for SBAR
   var vitalsParts = [];
   if (row.bpRaw) vitalsParts.push("BP " + row.bpRaw);
   if (row.hrRaw) vitalsParts.push("HR " + row.hrRaw);
@@ -475,18 +481,12 @@ function doAddRow() {
   row.vitals = vitalsParts.length ? vitalsParts.join(" | ") : "No VS";
 
   console.log("✅ Patient data captured:", row);
-
-  // Add to array
   wardRows.push(row);
   console.log("Total patients:", wardRows.length);
 
-  // Render table
   renderTable();
-
-  // Clear form
   clearAllFormFields();
   if ($("admitDateTime")) $("admitDateTime").value = isoNow();
-
   setStatus("✓ Added: " + patientName);
 }
 
@@ -495,16 +495,13 @@ function exportCsv() {
     alert("No data to export");
     return;
   }
-
-  console.log("Exporting CSV with", wardRows.length, "patients");
-
-  // Columns that match your table WITHOUT the Actions column
   var cols = [
     "Shift",
     "Status",
     "Room/Bed",
     "MRN",
     "Patient Name",
+    "Type",
     "Risk Flags",
     "Diagnosis",
     "BP (mmHg)",
@@ -517,9 +514,7 @@ function exportCsv() {
     "Checklist",
     "SBAR",
   ];
-
   var lines = [cols.map(escapeCsv).join(",")];
-
   wardRows.forEach(function (r) {
     lines.push(
       [
@@ -528,6 +523,7 @@ function exportCsv() {
         (r.room || "") + (r.bed ? "/" + r.bed : ""),
         r.mrn || "",
         r.patientName || "",
+        r.isPediatric ? "Pediatric" : "Adult",
         getRiskFlags(r),
         r.workingDx || "",
         r.bpRaw || "",
@@ -546,18 +542,13 @@ function exportCsv() {
         .join(","),
     );
   });
-
-  var csvContent = lines.join("\r\n");
-  console.log("CSV Content first 100 chars:", csvContent.substring(0, 100));
-
-  var blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
+  var blob = new Blob([lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
   var a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "ward_admissions_" + isoNow().replace(/[: ]/g, "-") + ".csv";
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-
   setStatus("CSV exported");
 }
 
@@ -566,16 +557,13 @@ function exportToExcel() {
     alert("No data to export");
     return;
   }
-
-  console.log("Exporting to Excel with", wardRows.length, "patients");
-
-  // Columns that match your table WITHOUT the Actions column
   var cols = [
     "Shift",
     "Status",
     "Room/Bed",
     "MRN",
     "Patient Name",
+    "Type",
     "Risk Flags",
     "Diagnosis",
     "BP (mmHg)",
@@ -588,11 +576,7 @@ function exportToExcel() {
     "Checklist",
     "SBAR",
   ];
-
-  // Create data array with headers
   var data = [cols];
-
-  // Add patient data
   wardRows.forEach(function (r) {
     data.push([
       r.shift || "",
@@ -600,6 +584,7 @@ function exportToExcel() {
       (r.room || "") + (r.bed ? "/" + r.bed : ""),
       r.mrn || "",
       r.patientName || "",
+      r.isPediatric ? "Pediatric" : "Adult",
       getRiskFlags(r),
       r.workingDx || "",
       r.bpRaw || "",
@@ -613,87 +598,40 @@ function exportToExcel() {
       getSBAR(r),
     ]);
   });
-
-  // Create worksheet
   var wb = XLSX.utils.book_new();
   var ws = XLSX.utils.aoa_to_sheet(data);
-
-  // Auto-calculate column widths based on content
   var colWidths = [];
   for (var i = 0; i < cols.length; i++) {
-    var maxLength = cols[i].length; // Start with header length
-
-    // Check all rows for this column
+    var maxLength = cols[i].length;
     for (var j = 1; j < data.length; j++) {
       var cellValue = data[j][i] ? data[j][i].toString() : "";
-      if (cellValue.length > maxLength) {
-        maxLength = cellValue.length;
-      }
+      if (cellValue.length > maxLength) maxLength = cellValue.length;
     }
-
-    // Add some padding (min width 8, max width 50)
-    var width = Math.min(50, Math.max(8, maxLength + 2));
-    colWidths.push({ wch: width });
+    colWidths.push({ wch: Math.min(50, Math.max(8, maxLength + 2)) });
   }
-
   ws["!cols"] = colWidths;
-
-  // Create header style
   var headerStyle = {
-    fill: {
-      patternType: "solid",
-      fgColor: { rgb: "FFDA4F8E" }, // Pink color with FF prefix for solid
-    },
-    font: {
-      color: { rgb: "FFFFFFFF" }, // White with FF prefix
-      bold: true,
-      sz: 12,
-      name: "Arial",
-    },
-    alignment: {
-      horizontal: "center",
-      vertical: "center",
-    },
+    fill: { patternType: "solid", fgColor: { rgb: "FFDA4F8E" } },
+    font: { color: { rgb: "FFFFFFFF" }, bold: true, sz: 12, name: "Arial" },
+    alignment: { horizontal: "center", vertical: "center" },
     border: {
-      bottom: {
-        style: "thin",
-        color: { rgb: "FFB8366E" },
-      },
-      top: {
-        style: "thin",
-        color: { rgb: "FFB8366E" },
-      },
-      left: {
-        style: "thin",
-        color: { rgb: "FFB8366E" },
-      },
-      right: {
-        style: "thin",
-        color: { rgb: "FFB8366E" },
-      },
+      bottom: { style: "thin", color: { rgb: "FFB8366E" } },
+      top: { style: "thin", color: { rgb: "FFB8366E" } },
+      left: { style: "thin", color: { rgb: "FFB8366E" } },
+      right: { style: "thin", color: { rgb: "FFB8366E" } },
     },
   };
-
-  // Apply pink background to ALL header cells
   for (var C = 0; C < cols.length; C++) {
     var cellAddress = XLSX.utils.encode_cell({ r: 0, c: C });
-
-    // Create cell if it doesn't exist
-    if (!ws[cellAddress]) {
-      ws[cellAddress] = { t: "s", v: cols[C] };
-    }
-
-    // Apply the style
+    if (!ws[cellAddress]) ws[cellAddress] = { t: "s", v: cols[C] };
     ws[cellAddress].s = headerStyle;
   }
-
-  // Add workbook and save
   XLSX.utils.book_append_sheet(wb, ws, "Ward Admissions");
-
-  var fileName = "ward_admissions_" + isoNow().replace(/[: ]/g, "-") + ".xlsx";
-  XLSX.writeFile(wb, fileName);
-
-  setStatus("Excel file exported with pink headers!");
+  XLSX.writeFile(
+    wb,
+    "ward_admissions_" + isoNow().replace(/[: ]/g, "-") + ".xlsx",
+  );
+  setStatus("Excel file exported!");
 }
 
 function saveJson() {
@@ -734,14 +672,8 @@ function loadJson() {
           wardRows = data.wardRows;
           clearAllFilters();
           renderTable();
-
-          // Manually enable the export button
           var btnExp = $("btnExportCsv");
-          if (btnExp) {
-            btnExp.disabled = false;
-            console.log("Export button enabled, patients:", wardRows.length);
-          }
-
+          if (btnExp) btnExp.disabled = false;
           setStatus("Loaded " + wardRows.length + " patients");
         } else {
           alert("Invalid file format");
@@ -754,119 +686,127 @@ function loadJson() {
   };
 }
 
-// Vital Signs Alert Functions
+// ===== VITAL SIGNS ALERT FUNCTIONS =====
+// Each function checks isPediatricMode() first.
+// If pediatric mode is ON → clear any existing alert and return immediately.
+
 function checkSpO2(el) {
+  if (isPediatricMode()) {
+    removeAlert(el);
+    return;
+  }
   var v = parseFloat(el.value);
   if (isNaN(v)) {
     removeAlert(el);
     return;
   }
-  if (v < 80) {
-    setAlert(el, "v-critical", "CRITICAL");
-  } else if (v < 95) {
-    setAlert(el, "v-warning", "LOW");
-  } else {
-    removeAlert(el);
-  }
+  if (v < 80) setAlert(el, "v-critical", "CRITICAL");
+  else if (v < 95) setAlert(el, "v-warning", "LOW");
+  else removeAlert(el);
 }
 
 function checkBP(el) {
+  if (isPediatricMode()) {
+    removeAlert(el);
+    return;
+  }
   var v = el.value.trim();
   var m = /^(\d+)\/(\d+)$/.exec(v);
   if (!m) {
     removeAlert(el);
     return;
   }
-  var sys = parseInt(m[1]);
-  var dia = parseInt(m[2]);
-
-  if (sys >= 180 || dia >= 110 || sys < 80) {
+  var sys = parseInt(m[1]),
+    dia = parseInt(m[2]);
+  if (sys >= 180 || dia >= 110 || sys < 80)
     setAlert(el, "v-critical", "CRITICAL");
-  } else if (sys >= 140 || dia >= 90) {
-    setAlert(el, "v-warning", "HIGH");
-  } else {
-    removeAlert(el);
-  }
+  else if (sys >= 140 || dia >= 90) setAlert(el, "v-warning", "HIGH");
+  else removeAlert(el);
 }
 
 function checkHR(el) {
+  if (isPediatricMode()) {
+    removeAlert(el);
+    return;
+  }
   var v = parseFloat(el.value);
   if (isNaN(v)) {
     removeAlert(el);
     return;
   }
-  if (v > 130 || v < 40) {
-    setAlert(el, "v-critical", "CRITICAL");
-  } else if (v > 100 || v < 60) {
-    setAlert(el, "v-warning", "ABNORMAL");
-  } else {
-    removeAlert(el);
-  }
+  if (v > 130 || v < 40) setAlert(el, "v-critical", "CRITICAL");
+  else if (v > 100 || v < 60) setAlert(el, "v-warning", "ABNORMAL");
+  else removeAlert(el);
 }
 
 function checkRR(el) {
+  if (isPediatricMode()) {
+    removeAlert(el);
+    return;
+  }
   var v = parseFloat(el.value);
   if (isNaN(v)) {
     removeAlert(el);
     return;
   }
-  if (v > 28 || v < 8) {
-    setAlert(el, "v-critical", "CRITICAL");
-  } else if (v > 20) {
-    setAlert(el, "v-orange", "HIGH");
-  } else {
-    removeAlert(el);
-  }
+  if (v < 8) setAlert(el, "v-critical", "CRITICAL");
+  else if (v < 12) setAlert(el, "v-warning", "HYPOXIA");
+  else if (v > 28) setAlert(el, "v-critical", "CRITICAL");
+  else if (v > 20) setAlert(el, "v-orange", "HIGH");
+  else removeAlert(el);
 }
 
 function checkTemp(el) {
+  if (isPediatricMode()) {
+    removeAlert(el);
+    return;
+  }
   var v = parseFloat(el.value);
   if (isNaN(v)) {
     removeAlert(el);
     return;
   }
-  if (v >= 39.0) {
-    setAlert(el, "v-critical", "HIGH FEVER");
-  } else if (v >= 38.0) {
-    setAlert(el, "v-orange", "FEVER");
-  } else if (v < 36.0) {
-    setAlert(el, "v-warning", "HYPOTHERMIA");
-  } else {
-    removeAlert(el);
-  }
+  if (v >= 39.0) setAlert(el, "v-critical", "HIGH FEVER");
+  else if (v >= 38.0) setAlert(el, "v-orange", "FEVER");
+  else if (v < 36.0) setAlert(el, "v-warning", "HYPOTHERMIA");
+  else removeAlert(el);
 }
 
 function checkPain(el) {
+  if (isPediatricMode()) {
+    removeAlert(el);
+    return;
+  }
   var v = parseFloat(el.value);
   if (isNaN(v)) {
     removeAlert(el);
     return;
   }
-  if (v >= 8) {
-    setAlert(el, "v-critical", "SEVERE");
-  } else if (v >= 6) {
-    setAlert(el, "v-orange", "MODERATE");
-  } else {
-    removeAlert(el);
-  }
+  if (v >= 8) setAlert(el, "v-critical", "SEVERE");
+  else if (v >= 6) setAlert(el, "v-orange", "MODERATE");
+  else removeAlert(el);
 }
 
 function setAlert(el, className, text) {
-  // Remove any existing alert classes
   el.classList.remove("v-critical", "v-warning", "v-orange");
   el.classList.add(className);
 
-  // Create or update alert tag
+  // Map input class → tag colour class
+  var tagClass = "critical";
+  if (className === "v-warning") tagClass = "warning";
+  else if (className === "v-orange") tagClass = "orange";
+
   var wrap = el.parentNode;
   var existingTag = wrap.querySelector(".alert-tag");
   if (existingTag) {
     existingTag.textContent = text;
-    existingTag.className = "alert-tag " + className.replace("v-", "");
+    existingTag.className = "alert-tag " + tagClass;
   } else {
     var tag = document.createElement("span");
-    tag.className = "alert-tag " + className.replace("v-", "");
+    tag.className = "alert-tag " + tagClass;
     tag.textContent = text;
-    wrap.appendChild(tag);
+    // Insert BEFORE the input so it appears above it
+    wrap.insertBefore(tag, el);
   }
 }
 
@@ -874,9 +814,7 @@ function removeAlert(el) {
   el.classList.remove("v-critical", "v-warning", "v-orange");
   var wrap = el.parentNode;
   var tag = wrap.querySelector(".alert-tag");
-  if (tag) {
-    tag.remove();
-  }
+  if (tag) tag.remove();
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -895,10 +833,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // ===== PEDIATRIC CHECKBOX LISTENER =====
+  if ($("isPediatric")) {
+    $("isPediatric").addEventListener("change", function () {
+      updatePediatricUI();
+    });
+  }
+
   if ($("btnAddRow")) $("btnAddRow").addEventListener("click", doAddRow);
   if ($("btnExportCsv")) {
     $("btnExportCsv").addEventListener("click", function () {
-      // Directly export to Excel without asking
       exportToExcel();
     });
   }
@@ -936,7 +880,6 @@ document.addEventListener("DOMContentLoaded", function () {
   if ($("privacyMode"))
     $("privacyMode").addEventListener("change", renderTable);
 
-  // ONLY filter bar elements trigger renderTable
   ["filterShift", "filterStatus", "filterNurse", "filterSearch"].forEach(
     function (id) {
       var el = $(id);
