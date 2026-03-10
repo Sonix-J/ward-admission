@@ -65,6 +65,7 @@ body {
   line-height: 1.55;
 }
 
+/* ===== HEADER — brand + title only, no buttons ===== */
 .header {
   background: var(--brand);
   color: #fff;
@@ -82,20 +83,28 @@ body {
   align-items: center;
   gap: 16px;
 }
+
 .brand-mark {
-  width: 42px;
-  height: 42px;
-  border-radius: 13px;
-  background: rgba(255, 255, 255, 0.18);
+  background-color: rgba(255, 255, 255, 0.18);
   border: 2px solid rgba(255, 255, 255, 0.32);
-  display: grid;
-  place-items: center;
-  font-family: "DM Serif Display", serif;
-  font-size: 17px;
-  color: #fff;
+  border-radius: 12px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
   flex-shrink: 0;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  font-family: "DM Serif Display", serif;
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  gap: 4px;
 }
+.brand-amoxi {
+  color: #eee5e8;
+}
+.brand-care {
+  color: #11909b;
+}
+
 .header-titles {
   display: flex;
   flex-direction: column;
@@ -112,72 +121,120 @@ body {
   opacity: 0.72;
   font-weight: 500;
 }
-.header-right {
-  margin-left: auto;
+
+/* ===== ACTION TOOLBAR ===== */
+.action-toolbar {
+  background: var(--white);
+  border-bottom: 1.5px solid var(--border);
+  box-shadow: var(--shadow-xs);
+  position: sticky;
+  top: 66px;
+  z-index: 200;
+}
+.action-toolbar-inner {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 10px 28px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.toolbar-left {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+  flex: 1;
+}
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
+/* Status badge — on toolbar, uses brand palette */
 #statusBadge {
   padding: 5px 14px;
   border-radius: 999px;
   font-size: 11.5px;
   font-weight: 700;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  color: #fff;
+  background: var(--brand-pale);
+  border: 1px solid var(--brand-light);
+  color: var(--brand-dark);
   white-space: nowrap;
   transition: all 0.2s;
 }
 
-.hbtn {
+/* Toolbar buttons */
+.tbtn {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 6px 13px;
+  padding: 6px 14px;
   border-radius: var(--r-sm);
-  border: 1.5px solid rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
+  border: 1.5px solid var(--border-2);
+  background: var(--white);
+  color: var(--ink-2);
   font-family: "Poppins", sans-serif;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.12s;
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    box-shadow 0.12s;
 }
-.hbtn:hover {
-  background: rgba(255, 255, 255, 0.26);
+.tbtn:hover {
+  background: var(--brand-faint);
+  border-color: var(--brand);
+  box-shadow: var(--shadow-xs);
 }
-.hbtn:disabled {
+.tbtn:disabled {
   opacity: 0.38;
   cursor: not-allowed;
 }
-.hbtn.solid {
-  background: rgba(255, 255, 255, 0.92);
-  color: var(--brand-dark);
-  border-color: transparent;
+.tbtn.solid {
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand-dark);
   font-weight: 700;
+  box-shadow: 0 2px 8px rgba(184, 54, 110, 0.25);
 }
-.hbtn.solid:hover {
-  background: #fff;
+.tbtn.solid:hover {
+  background: var(--brand-dark);
+}
+.tbtn.danger {
+  color: var(--brand-deep);
+  border-color: var(--brand-light);
+}
+.tbtn.danger:hover {
+  background: var(--brand-pale);
+  border-color: var(--brand);
 }
 
+/* Privacy toggle on toolbar */
 .privacy-toggle {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   padding: 6px 13px;
   border-radius: var(--r-sm);
-  border: 1.5px solid rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.14);
+  border: 1.5px solid var(--border-2);
+  background: var(--white);
   font-size: 12px;
   font-weight: 700;
-  color: #fff;
+  color: var(--ink-2);
   cursor: pointer;
   user-select: none;
+  transition:
+    background 0.12s,
+    border-color 0.12s;
+}
+.privacy-toggle:hover {
+  background: var(--brand-faint);
+  border-color: var(--brand);
 }
 .privacy-toggle input[type="checkbox"] {
   width: 14px;
@@ -377,6 +434,40 @@ input[readonly] {
   color: var(--ink-2);
 }
 
+/* ===== ADMISSION DATE/TIME + NOW BUTTON INLINE ===== */
+.admit-datetime-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+.admit-datetime-row input {
+  flex: 1;
+  min-width: 0;
+}
+.btn-now {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  border-radius: var(--r-sm);
+  border: 1.5px solid var(--brand-light);
+  background: var(--brand-pale);
+  color: var(--brand-dark);
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.12s,
+    border-color 0.12s;
+}
+.btn-now:hover {
+  background: var(--brand-light);
+  border-color: var(--brand);
+}
+
 .vital-wrap {
   position: relative;
   display: flex;
@@ -384,7 +475,7 @@ input[readonly] {
   gap: 3px;
 }
 
-/* Alert tag now sits ABOVE the input as a block element — no overlap */
+/* Alert tag sits ABOVE the input */
 .vital-wrap .alert-tag {
   display: block;
   width: 100%;
@@ -396,10 +487,9 @@ input[readonly] {
   border-radius: 6px;
   pointer-events: none;
   white-space: nowrap;
-  order: -1; /* renders above the input */
+  order: -1;
 }
 
-/* Brand-palette alert colours — critical uses deep brand, warning uses brand-light */
 .vital-wrap .alert-tag.critical {
   background: var(--brand-deep);
   color: #fff;
@@ -416,7 +506,6 @@ input[readonly] {
   box-shadow: 0 1px 4px rgba(184, 54, 110, 0.3);
 }
 
-/* Input border/background when in alert state */
 .vital-wrap input.v-critical {
   border-color: var(--brand-deep) !important;
   background: var(--brand-pale) !important;
@@ -439,7 +528,6 @@ input[readonly] {
   box-shadow: 0 0 0 3px rgba(184, 54, 110, 0.13) !important;
 }
 
-/* Keep legacy red/yellow classes from old code harmless */
 .vital-wrap input.v-red {
   border-color: var(--brand-deep) !important;
   background: var(--brand-pale) !important;
@@ -472,7 +560,6 @@ input[readonly] {
   letter-spacing: 0.4px;
 }
 
-/* Side-by-side layout for Admission and Clinical Snapshot */
 .admission-clinical-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -719,10 +806,6 @@ tbody tr.row-alert-ora:hover td {
   color: #3730a3;
 }
 
-/* v-critical / v-warning / v-orange input styles are defined in the .vital-wrap block above */
-
-/* alert-tag styles are defined in the .vital-wrap block above */
-
 footer {
   text-align: center;
   padding: 22px;
@@ -733,10 +816,8 @@ footer {
 }
 
 /* ============================================================
-   PEDIATRIC PATIENT TOGGLE  — new styles
+   PEDIATRIC PATIENT TOGGLE
    ============================================================ */
-
-/* Toggle label in the card header */
 .pedia-toggle {
   display: inline-flex;
   align-items: center;
@@ -745,7 +826,6 @@ footer {
   cursor: pointer;
   user-select: none;
 }
-
 .pedia-toggle input[type="checkbox"] {
   width: 16px;
   height: 16px;
@@ -753,8 +833,6 @@ footer {
   cursor: pointer;
   flex-shrink: 0;
 }
-
-/* The visible badge part */
 .pedia-badge {
   display: inline-flex;
   align-items: center;
@@ -773,16 +851,12 @@ footer {
     box-shadow 0.15s;
   white-space: nowrap;
 }
-
-/* When the checkbox is checked, the label gets .pedia-active class via JS */
 .pedia-active .pedia-badge {
   background: var(--brand);
   border-color: var(--brand-dark);
   color: #fff;
   box-shadow: 0 2px 8px rgba(184, 54, 110, 0.3);
 }
-
-/* Notice banner inside the vitals section */
 .pedia-vitals-notice {
   display: flex;
   align-items: center;
@@ -797,8 +871,6 @@ footer {
   font-weight: 600;
   line-height: 1.4;
 }
-
-/* Patient type pill in the ward list table */
 .type-pill {
   display: inline-block;
   padding: 3px 10px;
@@ -859,7 +931,7 @@ tbody tr {
   animation: rowIn 0.18s ease both;
 }
 
-/* Responsive */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 980px) {
   .admission-clinical-row {
     grid-template-columns: 1fr;
@@ -882,6 +954,13 @@ tbody tr {
   }
   .header-titles .subtitle {
     display: none;
+  }
+  .action-toolbar-inner {
+    padding: 8px 14px;
+  }
+  .tbtn {
+    font-size: 11px;
+    padding: 5px 10px;
   }
   main {
     padding: 12px;
@@ -925,5 +1004,22 @@ tbody tr {
   }
   .pedia-toggle {
     margin-left: 0;
+  }
+  .admit-datetime-row {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 480px) {
+  .toolbar-left {
+    gap: 5px;
+  }
+  .tbtn {
+    font-size: 10.5px;
+    padding: 5px 8px;
+  }
+  #statusBadge {
+    font-size: 10.5px;
+    padding: 4px 10px;
   }
 }

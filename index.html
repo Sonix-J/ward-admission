@@ -14,30 +14,41 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
   </head>
   <body>
+    <!-- HEADER: logo + title only, no buttons -->
     <header class="header">
       <div class="header-inner">
-        <div class="brand-mark">H+</div>
+        <div class="brand-mark">
+          <span class="brand-amoxi">Amoxi</span
+          ><span class="brand-care">Care</span>
+        </div>
         <div class="header-titles">
           <p class="title">Ward Admission & Census</p>
           <p class="subtitle">
             Admission · SBAR Handover · Risk Flags · Export
           </p>
         </div>
-        <div class="header-right">
-          <label class="privacy-toggle"
-            ><input type="checkbox" id="privacyMode" /> Privacy</label
-          >
-          <button class="hbtn" id="btnAutofillNow">Now</button>
-          <button class="hbtn solid" id="btnExportCsv" disabled>
-            Export CSV
+      </div>
+    </header>
+
+    <!-- ACTION TOOLBAR: all buttons moved here -->
+    <div class="action-toolbar">
+      <div class="action-toolbar-inner">
+        <div class="toolbar-left">
+          <label class="privacy-toggle">
+            <input type="checkbox" id="privacyMode" /> Privacy
+          </label>
+          <button class="tbtn solid" id="btnExportCsv" disabled>
+            ⬇ Export CSV
           </button>
-          <button class="hbtn" id="btnSaveJson">Save</button>
-          <button class="hbtn" id="btnLoadJson">Load</button>
-          <button class="hbtn" id="btnClearAll">Clear All</button>
+          <button class="tbtn" id="btnSaveJson">Save</button>
+          <button class="tbtn" id="btnLoadJson">Load</button>
+          <button class="tbtn danger" id="btnClearAll">Clear All</button>
+        </div>
+        <div class="toolbar-right">
           <span id="statusBadge">Ready</span>
         </div>
       </div>
-    </header>
+    </div>
 
     <main>
       <div class="filterbar">
@@ -212,13 +223,21 @@
                 ><input id="mrn" placeholder="24-001233" />
               </div>
             </div>
+
+            <!-- ADMISSION DATE/TIME + NOW BUTTON INLINE -->
             <div class="fg" style="margin-bottom: 16px">
               <div class="field c12">
                 <label>Admission Date/Time <span class="req">*</span></label>
-                <input id="admitDateTime" placeholder="YYYY-MM-DD HH:MM" />
+                <div class="admit-datetime-row">
+                  <input id="admitDateTime" placeholder="YYYY-MM-DD HH:MM" />
+                  <button class="btn-now" id="btnAutofillNow" type="button">
+                    Now
+                  </button>
+                </div>
                 <span class="hint">Date and time of admission</span>
               </div>
             </div>
+
             <div class="fg" style="margin-bottom: 16px">
               <div class="field c6">
                 <label>Shift <span class="req">*</span></label>
@@ -292,7 +311,6 @@
           <div class="card-head">
             <span class="card-head-title">Clinical Snapshot</span>
             <span class="card-head-sub">Case Overview</span>
-            <!-- ===== PEDIATRIC TOGGLE ===== -->
             <label
               class="pedia-toggle"
               id="pediaToggleLabel"
@@ -345,7 +363,6 @@
               </div>
               <div class="field c12">
                 <label>Vital Signs</label>
-                <!-- Notice banner shown when pediatric mode is active -->
                 <div
                   id="pediaVitalsNotice"
                   class="pedia-vitals-notice"

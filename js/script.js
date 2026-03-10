@@ -298,7 +298,7 @@ function renderTable() {
     td17.style.whiteSpace = "nowrap";
     var deleteBtn = document.createElement("button");
     deleteBtn.className = "btn btn-sm btn-danger";
-    deleteBtn.textContent = "🗑";
+    deleteBtn.textContent = "Remove";
     deleteBtn.title = "Remove Patient";
     deleteBtn.style.padding = "2px 6px";
     deleteBtn.onclick = (function (rowIndex) {
