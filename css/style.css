@@ -78,10 +78,10 @@ body {
   max-width: 1380px;
   margin: 0 auto;
   padding: 0 28px;
-  height: 66px;
+  height: 100px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
 }
 
 .brand-mark {
@@ -99,25 +99,27 @@ body {
   gap: 4px;
 }
 .brand-amoxi {
-  color: #eee5e8;
+  color: white;
+  font-family: "Bree Serif", serif;
 }
 .brand-care {
-  color: #11909b;
+  color: #96e7ee;
+  font-family: "Bree Serif", serif;
 }
 
 .header-titles {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  align-items: center;
 }
 .header-titles .title {
-  font-size: 17px;
+  font-size: clamp(42px, 3.5vw, 32px);
   font-weight: 800;
   letter-spacing: -0.3px;
   line-height: 1.2;
 }
 .header-titles .subtitle {
-  font-size: 11px;
+  font-size: clamp(9px, 1.5vw, 11px);
   opacity: 0.72;
   font-weight: 500;
 }
@@ -128,7 +130,7 @@ body {
   border-bottom: 1.5px solid var(--border);
   box-shadow: var(--shadow-xs);
   position: sticky;
-  top: 66px;
+  top: 100px;
   z-index: 200;
 }
 .action-toolbar-inner {
