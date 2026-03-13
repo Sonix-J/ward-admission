@@ -20,7 +20,6 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
   </head>
   <body>
-    <!-- HEADER: logo + title only, no buttons -->
     <header class="header">
       <div class="header-inner">
         <div class="header-titles">
@@ -32,8 +31,6 @@
         </div>
       </div>
     </header>
-
-    <!-- ACTION TOOLBAR: all buttons moved here -->
     <div class="action-toolbar">
       <div class="action-toolbar-inner">
         <div class="toolbar-left">
@@ -77,19 +74,7 @@
         </div>
         <div class="ff">
           <span class="flb">Nurse on Duty</span>
-          <input
-            id="filterNurse"
-            placeholder="Search nurse..."
-            style="width: 160px"
-          />
-        </div>
-        <div class="ff">
-          <span class="flb">Search</span>
-          <input
-            id="filterSearch"
-            placeholder="Name, MRN, Room, Dx..."
-            style="width: 230px"
-          />
+          <input id="filterNurse" placeholder="Name" style="width: 160px" />
         </div>
         <div class="ff-right">
           <span id="rowCount"></span>
@@ -192,7 +177,6 @@
       </div>
 
       <div class="admission-clinical-row">
-        <!-- New Admission Card -->
         <div class="card">
           <div class="card-head">
             <span class="card-head-title">New Admission</span>
@@ -226,8 +210,6 @@
                 ><input id="mrn" placeholder="24-001233" />
               </div>
             </div>
-
-            <!-- ADMISSION DATE/TIME + NOW BUTTON INLINE -->
             <div class="fg" style="margin-bottom: 16px">
               <div class="field c12">
                 <label>Admission Date/Time <span class="req">*</span></label>
@@ -240,7 +222,6 @@
                 <span class="hint">Date and time of admission</span>
               </div>
             </div>
-
             <div class="fg" style="margin-bottom: 16px">
               <div class="field c6">
                 <label>Shift <span class="req">*</span></label>
@@ -308,8 +289,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Clinical Snapshot Card -->
         <div class="card">
           <div class="card-head">
             <span class="card-head-title">Clinical Snapshot</span>

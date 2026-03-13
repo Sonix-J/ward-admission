@@ -1,27 +1,21 @@
-// Ward Admission & Census - script.js
-console.log("🔥 SCRIPT LOADED - Ward Admission System");
-window.debugWard = function () {
-  console.log("wardRows:", wardRows);
-  console.log("tbody element:", $("tbody"));
-  console.log("btnAddRow element:", $("btnAddRow"));
-};
-
+// Shorthand for document.getElementById()
 function $(id) {
   return document.getElementById(id);
 }
+
+// Updates the status badge text in the toolbar
 function setStatus(text) {
   var el = $("statusBadge");
   if (el) el.textContent = text;
 }
 
-// ===== PEDIATRIC MODE HELPER =====
-// Returns true if the "Pediatric Patient" checkbox is checked.
-// When true, all adult vital sign alert checks are skipped.
+// Returns true if the Pediatric Patient checkbox is checked
 function isPediatricMode() {
   var cb = $("isPediatric");
   return cb ? cb.checked : false;
 }
 
+// Returns the current date and time as "YYYY-MM-DD HH:MM"
 function isoNow() {
   var d = new Date(),
     pad = function (n) {
@@ -40,6 +34,7 @@ function isoNow() {
   );
 }
 
+// Returns today's date as "YYYY-MM-DD" — used to cap the date-of-birth field
 function getTodayDateString() {
   var d = new Date();
   return (
@@ -51,11 +46,7 @@ function getTodayDateString() {
   );
 }
 
-function escapeCsv(v) {
-  var s = v === null || v === undefined ? "" : String(v);
-  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
-}
-
+// Calculates a patient's age in years from a "YYYY-MM-DD" date string
 function computeAgeFromDob(dobStr) {
   if (!dobStr) return "";
   var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec((dobStr || "").trim());
@@ -69,8 +60,10 @@ function computeAgeFromDob(dobStr) {
   return age >= 0 ? String(age) : "";
 }
 
+// In-memory array that holds all patient rows
 var wardRows = [];
 
+// Reads a patient's precautions and returns matching risk flags (e.g. "Airborne", "Fall Risk")
 function getRiskFlags(r) {
   var flags = [],
     p = (r.precautions || "").toLowerCase();
@@ -82,6 +75,7 @@ function getRiskFlags(r) {
   return flags.length ? flags.join(", ") : "None";
 }
 
+// Builds a short summary of which admission checklist items were completed
 function getChecklistSummary(ck) {
   if (!ck) return "None";
   var items = [];
@@ -95,6 +89,7 @@ function getChecklistSummary(ck) {
   return items.length ? items.join(" / ") : "None";
 }
 
+// Builds a one-line SBAR summary: patient name | diagnosis | vitals
 function getSBAR(r) {
   return (
     (r.patientName || "Unknown") +
@@ -105,6 +100,7 @@ function getSBAR(r) {
   );
 }
 
+// Returns the CSS class name that styles the status pill for a given patient status
 function getStatusClass(s) {
   if (s === "Admitted") return "status-Admitted";
   if (s === "For Transfer") return "status-ForTransfer";
@@ -114,52 +110,15 @@ function getStatusClass(s) {
   return "status-Admitted";
 }
 
+// Replaces a value with bullet dots when privacy mode is on, to hide patient identifiers on screen
 function masked(v) {
   return v ? "••••••" : "";
 }
 
-function fval(id) {
-  var el = document.getElementById(id);
-  if (!el) return "";
-  var allowed = ["filterShift", "filterStatus", "filterNurse", "filterSearch"];
-  for (var i = 0; i < allowed.length; i++) {
-    if (allowed[i] === id) return el.value || "";
-  }
-  return "";
-}
-
-function matchesFilters(r) {
-  var fs = fval("filterShift");
-  var fst = fval("filterStatus");
-  var fn = fval("filterNurse").trim().toLowerCase();
-  var q = fval("filterSearch").trim().toLowerCase();
-  if (fs && fs !== "" && (r.shift || "") !== fs) return false;
-  if (fst && fst !== "" && (r.patientStatus || "") !== fst) return false;
-  if (fn && fn !== "" && (r.nurseOnDuty || "").toLowerCase().indexOf(fn) < 0)
-    return false;
-  if (q && q !== "") {
-    var hay = [
-      r.patientName || "",
-      r.mrn || "",
-      r.room || "",
-      r.bed || "",
-      r.workingDx || "",
-      r.chiefComplaint || "",
-    ]
-      .join(" ")
-      .toLowerCase();
-    if (hay.indexOf(q) < 0) return false;
-  }
-  return true;
-}
-
+// Rebuilds the entire ward list table from the wardRows array
 function renderTable() {
-  console.log("🎨 renderTable CALLED, rows:", wardRows.length);
   var tbody = $("tbody");
-  if (!tbody) {
-    console.error("❌ tbody not found!");
-    return;
-  }
+  if (!tbody) return;
   tbody.innerHTML = "";
 
   var btnExp = $("btnExportCsv");
@@ -187,7 +146,7 @@ function renderTable() {
     var r = wardRows[i];
     var tr = document.createElement("tr");
 
-    // SHIFT
+    // Shift chip
     var td1 = document.createElement("td");
     td1.innerHTML =
       '<span class="shift-chip shift-' +
@@ -197,7 +156,7 @@ function renderTable() {
       "</span>";
     tr.appendChild(td1);
 
-    // STATUS
+    // Status pill
     var td2 = document.createElement("td");
     td2.innerHTML =
       '<span class="status-pill ' +
@@ -207,22 +166,22 @@ function renderTable() {
       "</span>";
     tr.appendChild(td2);
 
-    // ROOM/BED
+    // Room / Bed
     var td3 = document.createElement("td");
     td3.textContent = (r.room || "—") + (r.bed ? "/" + r.bed : "");
     tr.appendChild(td3);
 
-    // MRN
+    // MRN — masked in privacy mode
     var td4 = document.createElement("td");
     td4.textContent = privacy ? masked(r.mrn) : r.mrn || "—";
     tr.appendChild(td4);
 
-    // PATIENT
+    // Patient name — masked in privacy mode
     var td5 = document.createElement("td");
     td5.textContent = privacy ? "••••••" : r.patientName || "—";
     tr.appendChild(td5);
 
-    // TYPE (Pedia / Adult)
+    // Patient type pill (Pedia / Adult)
     var td5b = document.createElement("td");
     if (r.isPediatric) {
       td5b.innerHTML = '<span class="type-pill type-pedia">Pedia</span>';
@@ -231,52 +190,47 @@ function renderTable() {
     }
     tr.appendChild(td5b);
 
-    // RISK FLAGS
+    // Risk flags
     var td6 = document.createElement("td");
     td6.textContent = getRiskFlags(r);
     tr.appendChild(td6);
 
-    // DIAGNOSIS
+    // Working diagnosis
     var td7 = document.createElement("td");
     td7.textContent = r.workingDx || "—";
     tr.appendChild(td7);
 
-    // BP
+    // Vital signs columns
     var td8 = document.createElement("td");
     td8.textContent = r.bpRaw || "—";
     tr.appendChild(td8);
 
-    // HR
     var td9 = document.createElement("td");
     td9.textContent = r.hrRaw || "—";
     tr.appendChild(td9);
 
-    // RR
     var td10 = document.createElement("td");
     td10.textContent = r.rrRaw || "—";
     tr.appendChild(td10);
 
-    // TEMP
     var td11 = document.createElement("td");
     td11.textContent = r.tempRaw || "—";
     tr.appendChild(td11);
 
-    // SpO2
     var td12 = document.createElement("td");
     td12.textContent = r.spo2Raw || "—";
     tr.appendChild(td12);
 
-    // PAIN
     var td13 = document.createElement("td");
     td13.textContent = r.painRaw || "—";
     tr.appendChild(td13);
 
-    // PRECAUTIONS
+    // Precautions
     var td14 = document.createElement("td");
     td14.textContent = r.precautions || "—";
     tr.appendChild(td14);
 
-    // CHECKLIST
+    // Checklist summary
     var td15 = document.createElement("td");
     td15.textContent = getChecklistSummary(r.checklist);
     td15.style.whiteSpace = "nowrap";
@@ -285,7 +239,7 @@ function renderTable() {
     td15.style.overflow = "visible";
     tr.appendChild(td15);
 
-    // SBAR
+    // SBAR summary
     var td16 = document.createElement("td");
     td16.style.whiteSpace = "nowrap";
     td16.style.fontSize = "11px";
@@ -293,7 +247,7 @@ function renderTable() {
     td16.textContent = getSBAR(r);
     tr.appendChild(td16);
 
-    // ACTIONS
+    // Remove button — deletes this patient from the ward list
     var td17 = document.createElement("td");
     td17.style.whiteSpace = "nowrap";
     var deleteBtn = document.createElement("button");
@@ -315,10 +269,9 @@ function renderTable() {
 
     tbody.appendChild(tr);
   }
-
-  console.log("✅ Table rendered with", wardRows.length, "rows");
 }
 
+// Clears all input fields and resets the form back to its default state
 function clearAllFormFields() {
   [
     "lastName",
@@ -383,27 +336,24 @@ function clearAllFormFields() {
 
   if ($("dob")) $("dob").value = "";
 
-  // Reset pediatric checkbox and clear all vital alerts
+  // Reset pediatric toggle and remove any vital sign alert highlights
   if ($("isPediatric")) $("isPediatric").checked = false;
   updatePediatricUI();
 
-  // Clear vital alert states visually
   ["bp", "hr", "rr", "temp", "spo2", "pain"].forEach(function (id) {
     var el = $(id);
     if (el) removeAlert(el);
   });
 }
 
+// Resets all filter fields to their default empty state
 function clearAllFilters() {
-  ["filterShift", "filterStatus", "filterNurse", "filterSearch"].forEach(
-    function (id) {
-      if ($(id)) $(id).value = "";
-    },
-  );
+  ["filterShift", "filterStatus", "filterNurse"].forEach(function (id) {
+    if ($(id)) $(id).value = "";
+  });
 }
 
-// ===== PEDIATRIC UI UPDATE =====
-// Shows/hides the notice banner and updates the toggle label styling.
+// Shows or hides the pediatric notice banner and re-runs vital sign checks when the toggle changes
 function updatePediatricUI() {
   var isPedia = isPediatricMode();
   var notice = $("pediaVitalsNotice");
@@ -418,11 +368,10 @@ function updatePediatricUI() {
     }
   }
 
-  // Re-run all current vital checks so alerts appear/disappear immediately
+  // Re-run vital checks so alerts appear or disappear immediately on toggle
   ["bp", "hr", "rr", "temp", "spo2", "pain"].forEach(function (id) {
     var el = $(id);
     if (el && el.value) {
-      // Trigger the appropriate check function
       if (id === "bp") checkBP(el);
       else if (id === "hr") checkHR(el);
       else if (id === "rr") checkRR(el);
@@ -435,9 +384,8 @@ function updatePediatricUI() {
   });
 }
 
+// Reads the form fields and adds a new patient row to the ward list
 function doAddRow() {
-  console.log("🔵 doAddRow function STARTED");
-
   var lastName = $("lastName") ? $("lastName").value : "";
   var firstName = $("firstName") ? $("firstName").value : "";
   var middleName = $("middleName") ? $("middleName").value : "";
@@ -457,7 +405,7 @@ function doAddRow() {
     bed: $("bed") ? $("bed").value : "",
     mrn: $("mrn") ? $("mrn").value : "",
     patientName: patientName,
-    isPediatric: isPediatricMode(), // ← save pediatric flag with the row
+    isPediatric: isPediatricMode(),
     workingDx: $("workingDx") ? $("workingDx").value : "",
     precautions: $("precautions") ? $("precautions").value : "",
     bpRaw: $("bp") ? $("bp").value : "",
@@ -478,6 +426,7 @@ function doAddRow() {
     },
   };
 
+  // Build a combined vitals string for the SBAR summary
   var vitalsParts = [];
   if (row.bpRaw) vitalsParts.push("BP " + row.bpRaw);
   if (row.hrRaw) vitalsParts.push("HR " + row.hrRaw);
@@ -487,9 +436,7 @@ function doAddRow() {
   if (row.painRaw) vitalsParts.push("Pain " + row.painRaw);
   row.vitals = vitalsParts.length ? vitalsParts.join(" | ") : "No VS";
 
-  console.log("✅ Patient data captured:", row);
   wardRows.push(row);
-  console.log("Total patients:", wardRows.length);
 
   renderTable();
   clearAllFormFields();
@@ -497,68 +444,7 @@ function doAddRow() {
   setStatus("✓ Added: " + patientName);
 }
 
-function exportCsv() {
-  if (!wardRows.length) {
-    alert("No data to export");
-    return;
-  }
-  var cols = [
-    "Shift",
-    "Status",
-    "Room/Bed",
-    "MRN",
-    "Patient Name",
-    "Type",
-    "Risk Flags",
-    "Diagnosis",
-    "BP (mmHg)",
-    "HR (bpm)",
-    "RR (/min)",
-    "Temp (°C)",
-    "SpO₂ (%)",
-    "Pain",
-    "Precautions",
-    "Checklist",
-    "SBAR",
-  ];
-  var lines = [cols.map(escapeCsv).join(",")];
-  wardRows.forEach(function (r) {
-    lines.push(
-      [
-        r.shift || "",
-        r.patientStatus || "",
-        (r.room || "") + (r.bed ? "/" + r.bed : ""),
-        r.mrn || "",
-        r.patientName || "",
-        r.isPediatric ? "Pediatric" : "Adult",
-        getRiskFlags(r),
-        r.workingDx || "",
-        r.bpRaw || "",
-        r.hrRaw || "",
-        r.rrRaw || "",
-        r.tempRaw || "",
-        r.spo2Raw || "",
-        r.painRaw || "",
-        r.precautions || "",
-        getChecklistSummary(r.checklist),
-        getSBAR(r),
-      ]
-        .map(function (v) {
-          return escapeCsv(v || "");
-        })
-        .join(","),
-    );
-  });
-  var blob = new Blob([lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
-  var a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "ward_admissions_" + isoNow().replace(/[: ]/g, "-") + ".csv";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setStatus("CSV exported");
-}
-
+// Exports the saved ward list to a formatted Excel (.xlsx) file
 function exportToExcel() {
   if (!wardRows.length) {
     alert("No data to export");
@@ -607,6 +493,8 @@ function exportToExcel() {
   });
   var wb = XLSX.utils.book_new();
   var ws = XLSX.utils.aoa_to_sheet(data);
+
+  // Auto-size each column based on the longest value in it
   var colWidths = [];
   for (var i = 0; i < cols.length; i++) {
     var maxLength = cols[i].length;
@@ -617,6 +505,8 @@ function exportToExcel() {
     colWidths.push({ wch: Math.min(50, Math.max(8, maxLength + 2)) });
   }
   ws["!cols"] = colWidths;
+
+  // Style the header row with brand-pink background and bold white text
   var headerStyle = {
     fill: { patternType: "solid", fgColor: { rgb: "FFDA4F8E" } },
     font: { color: { rgb: "FFFFFFFF" }, bold: true, sz: 12, name: "Arial" },
@@ -641,6 +531,7 @@ function exportToExcel() {
   setStatus("Excel file exported!");
 }
 
+// Saves the current ward list to a JSON file for later reloading
 function saveJson() {
   if (!wardRows.length) {
     alert("No data to save");
@@ -665,6 +556,7 @@ function saveJson() {
   setStatus("JSON saved");
 }
 
+// Loads a previously saved JSON file and restores the ward list from it
 function loadJson() {
   var input = document.createElement("input");
   input.type = "file";
@@ -693,10 +585,12 @@ function loadJson() {
   };
 }
 
-// ===== VITAL SIGNS ALERT FUNCTIONS =====
-// Each function checks isPediatricMode() first.
-// If pediatric mode is ON → clear any existing alert and return immediately.
+// ============================================================
+// VITAL SIGN ALERT CHECKS
+// All checks are skipped automatically when pediatric mode is on
+// ============================================================
 
+// Checks SpO2 and flags low or critically low oxygen saturation
 function checkSpO2(el) {
   if (isPediatricMode()) {
     removeAlert(el);
@@ -712,6 +606,7 @@ function checkSpO2(el) {
   else removeAlert(el);
 }
 
+// Checks blood pressure and flags hypertensive or hypotensive readings
 function checkBP(el) {
   if (isPediatricMode()) {
     removeAlert(el);
@@ -731,6 +626,7 @@ function checkBP(el) {
   else removeAlert(el);
 }
 
+// Checks heart rate and flags abnormally fast or slow values
 function checkHR(el) {
   if (isPediatricMode()) {
     removeAlert(el);
@@ -746,6 +642,7 @@ function checkHR(el) {
   else removeAlert(el);
 }
 
+// Checks respiratory rate and flags dangerously high or low values
 function checkRR(el) {
   if (isPediatricMode()) {
     removeAlert(el);
@@ -763,6 +660,7 @@ function checkRR(el) {
   else removeAlert(el);
 }
 
+// Checks temperature and flags fever or hypothermia
 function checkTemp(el) {
   if (isPediatricMode()) {
     removeAlert(el);
@@ -779,6 +677,7 @@ function checkTemp(el) {
   else removeAlert(el);
 }
 
+// Checks pain score and flags moderate or severe pain levels
 function checkPain(el) {
   if (isPediatricMode()) {
     removeAlert(el);
@@ -794,11 +693,11 @@ function checkPain(el) {
   else removeAlert(el);
 }
 
+// Adds a coloured alert tag above a vital sign input and applies the matching border colour
 function setAlert(el, className, text) {
   el.classList.remove("v-critical", "v-warning", "v-orange");
   el.classList.add(className);
 
-  // Map input class → tag colour class
   var tagClass = "critical";
   if (className === "v-warning") tagClass = "warning";
   else if (className === "v-orange") tagClass = "orange";
@@ -812,11 +711,11 @@ function setAlert(el, className, text) {
     var tag = document.createElement("span");
     tag.className = "alert-tag " + tagClass;
     tag.textContent = text;
-    // Insert BEFORE the input so it appears above it
     wrap.insertBefore(tag, el);
   }
 }
 
+// Removes any alert tag and coloured border from a vital sign input
 function removeAlert(el) {
   el.classList.remove("v-critical", "v-warning", "v-orange");
   var wrap = el.parentNode;
@@ -824,9 +723,14 @@ function removeAlert(el) {
   if (tag) tag.remove();
 }
 
+// ============================================================
+// PAGE INITIALISATION — runs once the DOM is fully loaded
+// ============================================================
 document.addEventListener("DOMContentLoaded", function () {
+  // Make the age field read-only — it is auto-calculated from date of birth
   if ($("age")) $("age").readOnly = true;
 
+  // Cap the date-of-birth picker at today and auto-calculate age on change
   if ($("dob")) {
     $("dob").max = getTodayDateString();
     $("dob").addEventListener("change", function () {
@@ -834,19 +738,21 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Strip non-numeric characters from the contact number field as the user types
   if ($("contactNo")) {
     $("contactNo").addEventListener("input", function () {
       this.value = this.value.replace(/[^0-9]/g, "");
     });
   }
 
-  // ===== PEDIATRIC CHECKBOX LISTENER =====
+  // Update the pediatric UI whenever the toggle checkbox changes
   if ($("isPediatric")) {
     $("isPediatric").addEventListener("change", function () {
       updatePediatricUI();
     });
   }
 
+  // Wire up the main action buttons
   if ($("btnAddRow")) $("btnAddRow").addEventListener("click", doAddRow);
   if ($("btnExportCsv")) {
     $("btnExportCsv").addEventListener("click", function () {
@@ -856,6 +762,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if ($("btnSaveJson")) $("btnSaveJson").addEventListener("click", saveJson);
   if ($("btnLoadJson")) $("btnLoadJson").addEventListener("click", loadJson);
 
+  // Clear only the form fields, keep the ward list intact
   if ($("btnClearForm")) {
     $("btnClearForm").addEventListener("click", function () {
       clearAllFormFields();
@@ -864,6 +771,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Clear everything — ward list, form, and filters
   if ($("btnClearAll")) {
     $("btnClearAll").addEventListener("click", function () {
       if (!confirm("Clear everything?")) return;
@@ -877,6 +785,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Fill the admission date/time field with the current time
   if ($("btnAutofillNow")) {
     $("btnAutofillNow").addEventListener("click", function () {
       if ($("admitDateTime")) $("admitDateTime").value = isoNow();
@@ -884,19 +793,20 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Re-render the table whenever privacy mode is toggled
   if ($("privacyMode"))
     $("privacyMode").addEventListener("change", renderTable);
 
-  ["filterShift", "filterStatus", "filterNurse", "filterSearch"].forEach(
-    function (id) {
-      var el = $(id);
-      if (el) {
-        el.addEventListener("input", renderTable);
-        el.addEventListener("change", renderTable);
-      }
-    },
-  );
+  // Re-render the table whenever any filter changes
+  ["filterShift", "filterStatus", "filterNurse"].forEach(function (id) {
+    var el = $(id);
+    if (el) {
+      el.addEventListener("input", renderTable);
+      el.addEventListener("change", renderTable);
+    }
+  });
 
+  // Set the admission date/time to now on page load, then do the initial table render
   if ($("admitDateTime")) $("admitDateTime").value = isoNow();
   renderTable();
 });
