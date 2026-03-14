@@ -65,7 +65,6 @@ body {
   line-height: 1.55;
 }
 
-/* ===== HEADER — brand + title only, no buttons ===== */
 .header {
   background: var(--brand);
   color: #fff;
@@ -124,7 +123,6 @@ body {
   font-weight: 500;
 }
 
-/* ===== ACTION TOOLBAR ===== */
 .action-toolbar {
   background: var(--white);
   border-bottom: 1.5px solid var(--border);
@@ -155,7 +153,6 @@ body {
   gap: 8px;
 }
 
-/* Status badge — on toolbar, uses brand palette */
 #statusBadge {
   padding: 5px 14px;
   border-radius: 999px;
@@ -168,7 +165,6 @@ body {
   transition: all 0.2s;
 }
 
-/* Toolbar buttons */
 .tbtn {
   display: inline-flex;
   align-items: center;
@@ -216,7 +212,6 @@ body {
   border-color: var(--brand);
 }
 
-/* Privacy toggle on toolbar */
 .privacy-toggle {
   display: inline-flex;
   align-items: center;
@@ -436,7 +431,6 @@ input[readonly] {
   color: var(--ink-2);
 }
 
-/* ===== ADMISSION DATE/TIME + NOW BUTTON INLINE ===== */
 .admit-datetime-row {
   display: flex;
   align-items: stretch;
@@ -477,7 +471,6 @@ input[readonly] {
   gap: 3px;
 }
 
-/* Alert tag sits ABOVE the input */
 .vital-wrap .alert-tag {
   display: block;
   width: 100%;
@@ -817,9 +810,6 @@ footer {
   border-top: 1px solid var(--border);
 }
 
-/* ============================================================
-   PEDIATRIC PATIENT TOGGLE
-   ============================================================ */
 .pedia-toggle {
   display: inline-flex;
   align-items: center;
@@ -892,8 +882,6 @@ footer {
   border: 1px solid #cbd5e1;
 }
 
-/* ============================================================ */
-
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -933,7 +921,6 @@ tbody tr {
   animation: rowIn 0.18s ease both;
 }
 
-/* ===== RESPONSIVE ===== */
 @media (max-width: 980px) {
   .admission-clinical-row {
     grid-template-columns: 1fr;

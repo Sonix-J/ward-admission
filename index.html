@@ -20,6 +20,7 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
   </head>
   <body>
+    <!-- header banner -->
     <header class="header">
       <div class="header-inner">
         <div class="header-titles">
@@ -31,28 +32,38 @@
         </div>
       </div>
     </header>
+
+    <!-- sticky toolbar -->
     <div class="action-toolbar">
       <div class="action-toolbar-inner">
         <div class="toolbar-left">
+          <!-- toggle for Privacy Mode -->
           <label class="privacy-toggle">
             <input type="checkbox" id="privacyMode" /> Privacy
           </label>
+          <!-- button for Export CSV -->
           <button class="tbtn solid" id="btnExportCsv" disabled>
             ⬇ Export CSV
           </button>
+          <!-- button for Save -->
           <button class="tbtn" id="btnSaveJson">Save</button>
+          <!-- button for Load -->
           <button class="tbtn" id="btnLoadJson">Load</button>
+          <!-- button for Clear All -->
           <button class="tbtn danger" id="btnClearAll">Clear All</button>
         </div>
         <div class="toolbar-right">
+          <!-- text for Status Badge -->
           <span id="statusBadge">Ready</span>
         </div>
       </div>
     </div>
 
     <main>
+      <!-- filter bar -->
       <div class="filterbar">
         <div class="ff">
+          <!-- dropdown for Shift filter -->
           <span class="flb">Shift</span>
           <select id="filterShift" style="width: 130px">
             <option value="">All Shifts</option>
@@ -62,6 +73,7 @@
           </select>
         </div>
         <div class="ff">
+          <!-- dropdown for Patient Status filter -->
           <span class="flb">Patient Status</span>
           <select id="filterStatus" style="width: 160px">
             <option value="">All Statuses</option>
@@ -73,14 +85,17 @@
           </select>
         </div>
         <div class="ff">
+          <!-- input for Nurse on Duty filter -->
           <span class="flb">Nurse on Duty</span>
           <input id="filterNurse" placeholder="Name" style="width: 160px" />
         </div>
         <div class="ff-right">
+          <!-- text for patient count -->
           <span id="rowCount"></span>
         </div>
       </div>
 
+      <!-- patient information card -->
       <div class="card">
         <div class="card-head">
           <span class="card-head-title">Patient Information</span>
@@ -88,17 +103,22 @@
         </div>
         <div class="fsec">
           <div class="fg">
+            <!-- input for Last Name -->
             <div class="field c4">
-              <label>Last Name <span class="req">*</span></label
-              ><input id="lastName" />
+              <label>Last Name <span class="req">*</span></label>
+              <input id="lastName" />
             </div>
+            <!-- input for First Name -->
             <div class="field c4">
-              <label>First Name <span class="req">*</span></label
-              ><input id="firstName" />
+              <label>First Name <span class="req">*</span></label>
+              <input id="firstName" />
             </div>
+            <!-- input for Middle Name -->
             <div class="field c4">
-              <label>Middle Name</label><input id="middleName" />
+              <label>Middle Name</label>
+              <input id="middleName" />
             </div>
+            <!-- dropdown for Sex -->
             <div class="field c2">
               <label>Sex</label>
               <select id="sex">
@@ -107,12 +127,17 @@
                 <option>Female</option>
               </select>
             </div>
+            <!-- date picker for Date of Birth -->
             <div class="field c2">
-              <label>Date of Birth</label><input type="date" id="dob" />
+              <label>Date of Birth</label>
+              <input type="date" id="dob" />
             </div>
+            <!-- input for Age (auto-calculated) -->
             <div class="field c2">
-              <label>Age (auto)</label><input id="age" type="number" readonly />
+              <label>Age (auto)</label>
+              <input id="age" type="number" readonly />
             </div>
+            <!-- dropdown for Civil Status -->
             <div class="field c2">
               <label>Civil Status</label>
               <select id="civilStatus">
@@ -124,6 +149,7 @@
                 <option>Other</option>
               </select>
             </div>
+            <!-- dropdown for Blood Type -->
             <div class="field c2">
               <label>Blood Type</label>
               <select id="bloodType">
@@ -139,35 +165,41 @@
                 <option>Unknown</option>
               </select>
             </div>
+            <!-- input for Height -->
             <div class="field c2">
-              <label>Height (cm)</label
-              ><input id="height" type="number" placeholder="e.g., 165" />
+              <label>Height (cm)</label>
+              <input id="height" type="number" placeholder="e.g., 165" />
             </div>
+            <!-- input for Weight -->
             <div class="field c2">
-              <label>Weight (kg)</label
-              ><input id="weight" type="number" placeholder="e.g., 60" />
+              <label>Weight (kg)</label>
+              <input id="weight" type="number" placeholder="e.g., 60" />
             </div>
+            <!-- input for Contact Number -->
             <div class="field c3">
-              <label>Contact No.</label
-              ><input id="contactNo" placeholder="+63..." />
+              <label>Contact No.</label>
+              <input id="contactNo" placeholder="+63..." />
             </div>
+            <!-- input for Address -->
             <div class="field c9">
-              <label>Address</label
-              ><input
+              <label>Address</label>
+              <input
                 id="address"
                 placeholder="Street/Barangay, City, Province"
               />
             </div>
+            <!-- input for Emergency Contact -->
             <div class="field c6">
-              <label>Emergency Contact (Name / Relation / No.)</label
-              ><input
+              <label>Emergency Contact (Name / Relation / No.)</label>
+              <input
                 id="emergencyContact"
                 placeholder="e.g., Maria Dela Cruz (Mother) — 09xx..."
               />
             </div>
+            <!-- input for Allergies -->
             <div class="field c6">
-              <label>Allergies</label
-              ><input
+              <label>Allergies</label>
+              <input
                 id="allergies"
                 placeholder="e.g., Penicillin; None known"
               />
@@ -176,7 +208,9 @@
         </div>
       </div>
 
+      <!-- two-column layout: admission (left) + clinical snapshot (right) -->
       <div class="admission-clinical-row">
+        <!-- new admission card -->
         <div class="card">
           <div class="card-head">
             <span class="card-head-title">New Admission</span>
@@ -186,35 +220,44 @@
           </div>
           <div class="fsec">
             <div class="fg" style="margin-bottom: 16px">
+              <!-- input for Facility / Hospital -->
               <div class="field c6">
-                <label>Facility / Hospital</label
-                ><input
+                <label>Facility / Hospital</label>
+                <input
                   id="facility"
                   placeholder="e.g., Southwestern University Hospital"
                 />
               </div>
+              <!-- input for Ward / Unit -->
               <div class="field c6">
-                <label>Ward / Unit</label
-                ><input id="ward" placeholder="e.g., Ward 3A" />
+                <label>Ward / Unit</label>
+                <input id="ward" placeholder="e.g., Ward 3A" />
               </div>
             </div>
             <div class="fg" style="margin-bottom: 16px">
+              <!-- input for Room -->
               <div class="field c4">
-                <label>Room</label><input id="room" placeholder="305" />
+                <label>Room</label>
+                <input id="room" placeholder="305" />
               </div>
+              <!-- input for Bed -->
               <div class="field c4">
-                <label>Bed</label><input id="bed" placeholder="B2" />
+                <label>Bed</label>
+                <input id="bed" placeholder="B2" />
               </div>
+              <!-- input for MRN / Hospital No. -->
               <div class="field c4">
-                <label>MRN / Hospital No.</label
-                ><input id="mrn" placeholder="24-001233" />
+                <label>MRN / Hospital No.</label>
+                <input id="mrn" placeholder="24-001233" />
               </div>
             </div>
             <div class="fg" style="margin-bottom: 16px">
+              <!-- input for Admission Date/Time -->
               <div class="field c12">
                 <label>Admission Date/Time <span class="req">*</span></label>
                 <div class="admit-datetime-row">
                   <input id="admitDateTime" placeholder="YYYY-MM-DD HH:MM" />
+                  <!-- button for Now (autofills current time) -->
                   <button class="btn-now" id="btnAutofillNow" type="button">
                     Now
                   </button>
@@ -223,6 +266,7 @@
               </div>
             </div>
             <div class="fg" style="margin-bottom: 16px">
+              <!-- dropdown for Shift -->
               <div class="field c6">
                 <label>Shift <span class="req">*</span></label>
                 <select id="shift">
@@ -232,6 +276,7 @@
                   <option>Night</option>
                 </select>
               </div>
+              <!-- dropdown for Patient Status -->
               <div class="field c6">
                 <label>Patient Status</label>
                 <select id="patientStatus">
@@ -244,6 +289,7 @@
               </div>
             </div>
             <div class="fg" style="margin-bottom: 16px">
+              <!-- dropdown for Admission Type -->
               <div class="field c6">
                 <label>Admission Type</label>
                 <select id="admitType">
@@ -254,6 +300,7 @@
                   <option>Transfer In</option>
                 </select>
               </div>
+              <!-- dropdown for Service -->
               <div class="field c6">
                 <label>Service</label>
                 <select id="service">
@@ -269,19 +316,22 @@
               </div>
             </div>
             <div class="fg" style="margin-bottom: 16px">
+              <!-- input for Attending Physician -->
               <div class="field c6">
-                <label>Attending Physician</label
-                ><input id="attending" placeholder="Dr. Juan Dela Cruz" />
+                <label>Attending Physician</label>
+                <input id="attending" placeholder="Dr. Juan Dela Cruz" />
               </div>
+              <!-- input for Nurse on Duty -->
               <div class="field c6">
-                <label>Nurse on Duty</label
-                ><input id="nurseOnDuty" placeholder="Full name or initials" />
+                <label>Nurse on Duty</label>
+                <input id="nurseOnDuty" placeholder="Full name or initials" />
               </div>
             </div>
+            <!-- input for Diet Order -->
             <div class="fg">
               <div class="field c12">
-                <label>Diet Order</label
-                ><input
+                <label>Diet Order</label>
+                <input
                   id="diet"
                   placeholder="NPO; Soft diet; Diabetic; Low salt; Regular; Clear liquids..."
                 />
@@ -289,10 +339,13 @@
             </div>
           </div>
         </div>
+
+        <!-- clinical snapshot card -->
         <div class="card">
           <div class="card-head">
             <span class="card-head-title">Clinical Snapshot</span>
             <span class="card-head-sub">Case Overview</span>
+            <!-- toggle for Pediatric Patient -->
             <label
               class="pedia-toggle"
               id="pediaToggleLabel"
@@ -304,6 +357,7 @@
           </div>
           <div class="fsec">
             <div class="fg">
+              <!-- textarea for Chief Complaint -->
               <div class="field c12">
                 <label>Chief Complaint</label>
                 <textarea
@@ -311,6 +365,7 @@
                   placeholder="e.g., Fever x 3 days, productive cough..."
                 ></textarea>
               </div>
+              <!-- textarea for Working / Admitting Diagnosis -->
               <div class="field c12">
                 <label>Working / Admitting Diagnosis</label>
                 <textarea
@@ -318,6 +373,7 @@
                   placeholder="e.g., CAP, AGE, DKA..."
                 ></textarea>
               </div>
+              <!-- dropdown for Precautions -->
               <div class="field c6">
                 <label>Precautions</label>
                 <select id="precautions">
@@ -332,6 +388,7 @@
                   <option>Other</option>
                 </select>
               </div>
+              <!-- dropdown for Code Status -->
               <div class="field c6">
                 <label>Code Status</label>
                 <select id="codeStatus">
@@ -343,8 +400,10 @@
                   <option>Unknown</option>
                 </select>
               </div>
+              <!-- vital signs section -->
               <div class="field c12">
                 <label>Vital Signs</label>
+                <!-- banner for Pediatric Mode notice -->
                 <div
                   id="pediaVitalsNotice"
                   class="pedia-vitals-notice"
@@ -354,6 +413,7 @@
                   disabled. Use age-appropriate reference ranges.
                 </div>
                 <div class="vitals-grid">
+                  <!-- input for Blood Pressure -->
                   <div class="vf">
                     <div class="vital-wrap">
                       <input
@@ -364,18 +424,21 @@
                     </div>
                     <span>BP (mmHg)</span>
                   </div>
+                  <!-- input for Heart Rate -->
                   <div class="vf">
                     <div class="vital-wrap">
                       <input id="hr" placeholder="72" oninput="checkHR(this)" />
                     </div>
                     <span>HR (bpm)</span>
                   </div>
+                  <!-- input for Respiratory Rate -->
                   <div class="vf">
                     <div class="vital-wrap">
                       <input id="rr" placeholder="18" oninput="checkRR(this)" />
                     </div>
                     <span>RR (/min)</span>
                   </div>
+                  <!-- input for Temperature -->
                   <div class="vf">
                     <div class="vital-wrap">
                       <input
@@ -386,6 +449,7 @@
                     </div>
                     <span>Temp (°C)</span>
                   </div>
+                  <!-- input for SpO2 -->
                   <div class="vf">
                     <div class="vital-wrap">
                       <input
@@ -396,6 +460,7 @@
                     </div>
                     <span>SpO2 (%)</span>
                   </div>
+                  <!-- input for Pain Score -->
                   <div class="vf">
                     <div class="vital-wrap">
                       <input
@@ -408,6 +473,7 @@
                   </div>
                 </div>
               </div>
+              <!-- textarea for Relevant History -->
               <div class="field c12">
                 <label>Relevant History (PMH / PSH / Home Meds)</label>
                 <textarea
@@ -415,6 +481,7 @@
                   placeholder="Past illnesses, surgeries, home meds..."
                 ></textarea>
               </div>
+              <!-- textarea for Initial Orders / Notes -->
               <div class="field c12">
                 <label>Initial Orders / Notes</label>
                 <textarea
@@ -422,6 +489,7 @@
                   placeholder="IVF, antibiotics, labs, imaging..."
                 ></textarea>
               </div>
+              <!-- textarea for Nursing Interventions -->
               <div class="field c12">
                 <label>Nursing Interventions</label>
                 <textarea
@@ -435,41 +503,49 @@
         </div>
       </div>
 
+      <!-- admission checklist card -->
       <div class="card">
         <div class="card-head">
           <span class="card-head-title">Admission Checklist</span>
         </div>
         <div class="ck-grid-row">
+          <!-- checkbox for ID Band Applied -->
           <label class="ck-item"
             ><input type="checkbox" id="ck_idband" /><span
               >ID band applied</span
             ></label
           >
+          <!-- checkbox for Allergies Verified -->
           <label class="ck-item"
             ><input type="checkbox" id="ck_allergy" /><span
               >Allergies verified</span
             ></label
           >
+          <!-- checkbox for Initial VS Taken -->
           <label class="ck-item"
             ><input type="checkbox" id="ck_vitals" /><span
               >Initial VS taken</span
             ></label
           >
+          <!-- checkbox for IV Access Secured -->
           <label class="ck-item"
             ><input type="checkbox" id="ck_iv" /><span
               >IV access secured</span
             ></label
           >
+          <!-- checkbox for Consent Completed -->
           <label class="ck-item"
             ><input type="checkbox" id="ck_consent" /><span
               >Consent completed</span
             ></label
           >
+          <!-- checkbox for Orders Carried Out -->
           <label class="ck-item"
             ><input type="checkbox" id="ck_orders" /><span
               >Orders carried out</span
             ></label
           >
+          <!-- checkbox for Safety & Comfort -->
           <label class="ck-item"
             ><input type="checkbox" id="ck_safety" /><span
               >Safety &amp; Comfort</span
@@ -481,26 +557,30 @@
             >Fields marked <span class="req">*</span> are required</span
           >
           <div class="spacer"></div>
+          <!-- button for Clear Form -->
           <button class="btn btn-ghost btn-sm" id="btnClearForm">
             Clear Form
           </button>
+          <!-- button for Add to Ward List -->
           <button class="btn btn-primary" id="btnAddRow">
             Add to Ward List
           </button>
         </div>
       </div>
 
+      <!-- ward list table -->
       <div class="card" id="wardListCard">
         <div class="card-head">
           <span class="card-head-title">Ward List</span>
+          <!-- text for live patient count -->
           <span
             id="rowCount2"
             class="card-head-sub"
             style="margin-left: 6px"
           ></span>
-          <span style="margin-left: auto; font-size: 11px; color: var(--ink-3)"
-            >Privacy mode masks identifiers on screen only.</span
-          >
+          <span style="margin-left: auto; font-size: 11px; color: var(--ink-3)">
+            Privacy mode masks identifiers on screen only.
+          </span>
         </div>
         <div class="table-wrap">
           <table>
@@ -526,6 +606,7 @@
                 <th>ACTIONS</th>
               </tr>
             </thead>
+            <!-- rows generated by renderTable() in script.js -->
             <tbody id="tbody"></tbody>
           </table>
         </div>
