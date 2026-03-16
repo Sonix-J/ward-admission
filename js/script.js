@@ -599,7 +599,7 @@ function loadJson() {
 // --- vital sign checks ---
 // all checks are skipped when pediatric mode is on
 
-// checks SpO2 — flags low or critically low oxygen
+// checks SpO2 — normal is 95–100%; below 90% = hypoxemia (red); 90–94% = low (orange); above 100% = hyperoxia (orange)
 function checkSpO2(el) {
   if (isPediatricMode()) {
     removeAlert(el);
@@ -610,12 +610,17 @@ function checkSpO2(el) {
     removeAlert(el);
     return;
   }
-  if (v < 80) setAlert(el, "v-critical", "CRITICAL");
-  else if (v < 95) setAlert(el, "v-warning", "LOW");
+  if (v < 90) setAlert(el, "v-critical", "HYPOXEMIA");
+  else if (v < 95) setAlert(el, "v-orange", "LOW");
+  else if (v > 100) setAlert(el, "v-orange", "HYPEROXIA");
   else removeAlert(el);
 }
 
-// checks blood pressure — flags hypertensive or hypotensive readings
+// checks blood pressure
+// normal: 120/80
+// hypertension: sys > 120 or dia > 80 (yellow warning)
+// mild hypotension: sys 100–119 or dia 60–79 i.e. below normal but not yet severe (orange)
+// severe hypotension: sys < 100 or dia < 60 (red critical)
 function checkBP(el) {
   if (isPediatricMode()) {
     removeAlert(el);
@@ -629,9 +634,12 @@ function checkBP(el) {
   }
   var sys = parseInt(m[1]),
     dia = parseInt(m[2]);
-  if (sys >= 180 || dia >= 110 || sys < 80)
-    setAlert(el, "v-critical", "CRITICAL");
-  else if (sys >= 140 || dia >= 90) setAlert(el, "v-warning", "HIGH");
+  // severe hypotension — red (sys < 100 or dia < 60)
+  if (sys < 100 || dia < 60) setAlert(el, "v-critical", "HYPOTENSION");
+  // mild hypotension — orange (below normal 120/80 but not yet severe)
+  else if (sys < 120 || dia < 80) setAlert(el, "v-orange", "HYPOTENSION");
+  // hypertension — above 120/80 — yellow warning
+  else if (sys > 120 || dia > 80) setAlert(el, "v-warning", "HYPERTENSION");
   else removeAlert(el);
 }
 
